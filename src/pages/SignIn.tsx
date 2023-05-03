@@ -21,19 +21,18 @@ export function SignIn() {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      //If user account exists sign in and redirect home
       const auth = getAuth();
-      const userCredentials = await signInWithEmailAndPassword(
+      const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
         password
       );
-      if (userCredentials.user) {
+      if (userCredential.user) {
         navigate("/");
-      } else {
-        console.log("No User Found!");
       }
     } catch (error) {
-      console.log(error);
+      console.log("No User");
     }
   };
 
