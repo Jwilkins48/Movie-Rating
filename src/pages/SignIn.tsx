@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import "animate.css";
 
 export function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
@@ -37,8 +38,8 @@ export function SignIn() {
   };
 
   return (
-    <div className="lg:flex flex-col items-center justify-center lg:h-[80vh]">
-      <div className="lg:bg-base-300 lg:p-12 lg:py-20 lg:shadow-2xl lg:rounded-xl animate__animated animate__fadeInUp">
+    <div className="lg:flex flex-col items-center justify-center lg:h-[90vh] overflow-hidden">
+      <div className="lg:bg-base-300 lg:p-12 lg:py-20 lg:shadow-2xl lg:rounded-xl animate__animated animate__fadeInUp border-accent border-[1px]">
         <header>
           <h3 className="text-3xl lg:text-5xl my-6 ml-3 font-bold text-primary">
             Welcome Back!
@@ -87,7 +88,7 @@ export function SignIn() {
             Forgot Password?
           </Link>
 
-          <Link className=" text-primary font-bold my-2 ml-2" to="/signUp">
+          <Link className=" text-primary font-bold my-2 ml-2" to="/sign-up">
             Sign Up
           </Link>
         </form>
