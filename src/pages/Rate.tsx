@@ -1,3 +1,9 @@
+import { Tabs } from "../components/Tabs";
 export function Rate() {
-  return <h1>Rate</h1>;
+  return (
+    <div>
+      <Tabs />
+      <h1>rate</h1>
+    </div>
+  );
 }

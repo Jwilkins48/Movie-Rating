@@ -1,3 +1,10 @@
+import { Tabs } from "../components/Tabs";
+
 export function Spin() {
-  return <h1>Spin</h1>;
+  return (
+    <div>
+      <Tabs />
+      <h1>Spin</h1>
+    </div>
+  );
 }

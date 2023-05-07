@@ -1,3 +1,62 @@
+@import url("https://fonts.googleapis.com/css2?family=Braah+One&family=Bruno+Ace+SC&family=Darumadrop+One&family=Lobster&family=Montserrat&family=Pacifico&family=Quicksand&family=Shadows+Into+Light&family=Sigmar&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* font-family: 'Braah One', sans-serif; .
+font-family: 'Bruno Ace SC', cursive; 
+font-family: 'Darumadrop One', cursive; 
+font-family: 'Lobster', cursive; .
+font-family: 'Montserrat', sans-serif;
+font-family: 'Pacifico', cursive; .
+font-family: 'Quicksand', sans-serif;
+font-family: 'Shadows Into Light', cursive;
+font-family: 'Sigmar', cursive; . */
+
+/* Animations */
+.animate {
+  animation-duration: 1.5s;
+}
+.tabAnimate.one {
+  animation-duration: 1.5s;
+}
+.tabAnimate.two {
+  animation-duration: 2.5s;
+}
+.tabAnimate.three {
+  animation-duration: 3.5s;
+}
+
+/* Nav */
+.title {
+  font-family: "Braah One", sans-serif;
+}
+.name {
+  font-family: "Darumadrop One", cursive;
+}
+
+/* Tab component */
+.tabs {
+  font-family: "Quicksand", sans-serif;
+}
+.hover {
+  display: inline-block;
+  position: relative;
+}
+.hover::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #563b88;
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.hover:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
