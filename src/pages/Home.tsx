@@ -1,12 +1,53 @@
 import { Tabs } from "../components/Tabs";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { db } from "../../firebase.config";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { doc } from "firebase/firestore";
+import {
+  DocumentData,
+  addDoc,
+  collection,
+  deleteDoc,
+  getDocs,
+  orderBy,
+  query,
+  serverTimestamp,
+} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+
+interface movie {
+  data: DocumentData;
+  id: string;
+}
 
 export function Home() {
   const [formData, setFormData] = useState({ movieName: "", genre: "" });
+  const [movies, setMovies] = useState<movie[]>([]);
+  const [modal, setModal] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        const movieRef = collection(db, "wantToWatch");
+        const q = query(movieRef, orderBy("timestamp", "desc"));
+
+        const querySnap = await getDocs(q);
+        const moviesArray: movie[] = [];
+
+        querySnap.forEach((doc) => {
+          return moviesArray.push({
+            id: doc.id,
+            data: doc.data(),
+          });
+        });
+        setMovies(moviesArray);
+        console.log(movies);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchMovies();
+  }, [modal]);
 
   //Modal Selected Movie Genre
   const onSelectChange = (e: React.FormEvent<HTMLSelectElement>) => {
@@ -39,7 +80,20 @@ export function Home() {
     // Add form data to collection
     await addDoc(collection(db, "wantToWatch"), formDataCopy);
     console.log("Saved!");
+    setFormData((prevState) => ({
+      ...prevState,
+      movieName: "",
+    }));
+    setModal(false);
+
     navigate("/");
+  };
+
+  const onDelete = async (id: string) => {
+    await deleteDoc(doc(db, "wantToWatch", id));
+    const updatedList = movies.filter((item) => item.id !== id);
+    setMovies(updatedList);
+    console.log("Movie Deleted");
   };
 
   return (
@@ -47,7 +101,11 @@ export function Home() {
       <Tabs />
 
       <div className="overflow-x-auto mx-2 my-6">
-        <label htmlFor="my-modal-3" className="btn mb-2">
+        <label
+          onClick={() => setModal(true)}
+          htmlFor="my-modal-3"
+          className="btn mb-2"
+        >
           + Add
         </label>
 
@@ -61,42 +119,48 @@ export function Home() {
               </th>
               <th>Movie Name</th>
               <th>Genre</th>
+              <th></th>
             </tr>
           </thead>
-
+          {/* Display movies in array */}
           <tbody>
-            {/* MAP MOVIES IN DB  */}
-            {/* <tr>
-              <th>
-                <label>
-                  <input type="checkbox" className="checkbox" />
-                </label>
-              </th>
-              <td>
-                <div className="flex items-center space-x-3">
-                  <div>
-                    <div className="font-bold">Marjy Ferencz</div>
-                    <div className="text-sm opacity-50">Russia</div>
+            {movies.map((movie) => (
+              <tr key={movie.id}>
+                <th>
+                  <label>
+                    <input type="checkbox" className="checkbox" />
+                  </label>
+                </th>
+                <td>
+                  <div className="flex items-center space-x-3">
+                    <div>
+                      <div className="font-bold">{movie.data.movieName}</div>
+                    </div>
                   </div>
-                </div>
-              </td>
-              <td>
-                Rowe-Schoen
-                <br />
-                <span className="badge badge-ghost badge-sm">
-                  Office Assistant I
-                </span>
-              </td>
-            </tr> */}
+                </td>
+                <td>{movie.data.genre}</td>
+                <td>
+                  <button onClick={() => onDelete(movie.id)}>
+                    <i className="fa-solid fa-xmark" />
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
 
       {/* ADD MOVIE MODAL */}
-      <input type="checkbox" id="my-modal-3" className="modal-toggle" />
-      <form onSubmit={onSubmit} className="modal">
+      <input
+        type="checkbox"
+        id="my-modal-3"
+        checked={modal}
+        className="modal-toggle"
+      />
+      <form onSubmit={onSubmit} className="modal" id="modal">
         <div className="modal-box relative">
           <label
+            onClick={() => setModal(false)}
             htmlFor="my-modal-3"
             className="btn btn-sm btn-circle absolute right-2 top-2"
           >
@@ -125,6 +189,7 @@ export function Home() {
               <option disabled>Genre</option>
               <option>Romance</option>
               <option>Drama</option>
+              <option>Comedy</option>
               <option>Action</option>
               <option>Western</option>
               <option>Thriller</option>
@@ -135,7 +200,7 @@ export function Home() {
             </select>
           </div>
 
-          <button type="submit" className="btn">
+          <button type="submit" className="btn ">
             <i className="mr-2 fa-solid fa-plus"></i> Add Movie
           </button>
         </div>

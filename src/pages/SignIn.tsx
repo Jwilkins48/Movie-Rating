@@ -82,7 +82,7 @@ export function SignIn() {
             Sign In
           </button>
           <Link
-            to="/forgotPassword"
+            to="/forgot-password"
             className="text-primary font-bold my-2 ml-2"
           >
             Forgot Password?

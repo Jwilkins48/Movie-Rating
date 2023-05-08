@@ -71,7 +71,7 @@ export function Navbar() {
             </div>
           </div>
         ) : (
-          <Link to="/sign-in" className="text-[15px] text-primary btn">
+          <Link to="/sign-in" className="text-[15px] text-primary  btn">
             Sign In
           </Link>
         )}
