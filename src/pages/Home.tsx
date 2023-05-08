@@ -1,13 +1,13 @@
 import { Tabs } from "../components/Tabs";
 import React, { useState, useEffect } from "react";
 import { db } from "../../firebase.config";
-import { doc } from "firebase/firestore";
 import {
   DocumentData,
   addDoc,
   collection,
   deleteDoc,
   getDocs,
+  doc,
   orderBy,
   query,
   serverTimestamp,
@@ -112,13 +112,11 @@ export function Home() {
         <table className="table table-zebra w-full">
           <thead>
             <tr>
-              <th>
-                <label>
-                  <input type="checkbox" className="checkbox" />
-                </label>
-              </th>
               <th>Movie Name</th>
               <th>Genre</th>
+              <th>
+                <label>Watched</label>
+              </th>
               <th></th>
             </tr>
           </thead>
@@ -126,19 +124,20 @@ export function Home() {
           <tbody>
             {movies.map((movie) => (
               <tr key={movie.id}>
-                <th>
-                  <label>
-                    <input type="checkbox" className="checkbox" />
-                  </label>
-                </th>
+                <th>{movie.data.movieName}</th>
                 <td>
                   <div className="flex items-center space-x-3">
                     <div>
-                      <div className="font-bold">{movie.data.movieName}</div>
+                      <div className="font-bold">{movie.data.genre}</div>
                     </div>
                   </div>
                 </td>
-                <td>{movie.data.genre}</td>
+                <td>
+                  <label>
+                    <input type="checkbox" className="checkbox" />
+                  </label>
+                </td>
+
                 <td>
                   <button onClick={() => onDelete(movie.id)}>
                     <i className="fa-solid fa-xmark" />
