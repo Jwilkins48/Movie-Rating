@@ -25,6 +25,13 @@ export function Home() {
   const [modal, setModal] = useState(false);
   const navigate = useNavigate();
 
+  //Reset movie name input
+  const handleReset = () => {
+    Array.from(document.querySelectorAll("input")).forEach(
+      (input) => (input.value = "")
+    );
+  };
+
   useEffect(() => {
     const fetchMovies = async () => {
       try {
@@ -72,21 +79,26 @@ export function Home() {
     e.preventDefault();
     console.log(formData);
 
-    //Add timestamp
-    const formDataCopy = {
-      ...formData,
-      timestamp: serverTimestamp(),
-    };
-    // Add form data to collection
-    await addDoc(collection(db, "wantToWatch"), formDataCopy);
-    console.log("Saved!");
-    setFormData((prevState) => ({
-      ...prevState,
-      movieName: "",
-    }));
-    setModal(false);
+    if (formData.movieName !== "") {
+      //Add timestamp
+      const formDataCopy = {
+        ...formData,
+        timestamp: serverTimestamp(),
+      };
 
-    navigate("/");
+      // Add form data to collection
+      await addDoc(collection(db, "wantToWatch"), formDataCopy);
+      console.log("Saved!");
+      setFormData((prevState) => ({
+        ...prevState,
+        movieName: "",
+      }));
+      setModal(false);
+      handleReset();
+      navigate("/");
+    } else {
+      alert("Enter movie name");
+    }
   };
 
   const onDelete = async (id: string) => {
@@ -190,11 +202,12 @@ export function Home() {
               <option>Drama</option>
               <option>Comedy</option>
               <option>Action</option>
+              <option>Adventure</option>
               <option>Western</option>
               <option>Thriller</option>
               <option>Horror</option>
               <option>Fantasy</option>
-              <option>SyFy</option>
+              <option>Sci-fi</option>
               <option>Other</option>
             </select>
           </div>
