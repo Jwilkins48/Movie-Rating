@@ -1,6 +1,8 @@
-import { Tabs } from "../components/Tabs";
+import { RateModal } from "../components/RateModal";
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase.config";
+import { Tabs } from "../components/Tabs";
 import {
   DocumentData,
   addDoc,
@@ -12,7 +14,6 @@ import {
   query,
   serverTimestamp,
 } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
 
 interface movie {
   data: DocumentData;
@@ -22,15 +23,9 @@ interface movie {
 export function Home() {
   const [formData, setFormData] = useState({ movieName: "", genre: "" });
   const [movies, setMovies] = useState<movie[]>([]);
+  const [rateModal, setRateModal] = useState(false);
   const [modal, setModal] = useState(false);
   const navigate = useNavigate();
-
-  //Reset movie name input
-  const handleReset = () => {
-    Array.from(document.querySelectorAll("input")).forEach(
-      (input) => (input.value = "")
-    );
-  };
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -56,6 +51,32 @@ export function Home() {
     fetchMovies();
   }, [modal]);
 
+  //Submit Modal
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(formData);
+
+    if (formData.movieName !== "") {
+      //Add timestamp
+      const formDataCopy = {
+        ...formData,
+        timestamp: serverTimestamp(),
+      };
+
+      // Add form data to collection
+      await addDoc(collection(db, "wantToWatch"), formDataCopy);
+      console.log("Saved!");
+      setModal(false);
+
+      //Reset Form
+      const resetForm = e.target as HTMLFormElement;
+      resetForm.reset();
+      navigate("/");
+    } else {
+      alert("Enter movie name");
+    }
+  };
+
   //Modal Selected Movie Genre
   const onSelectChange = (e: React.FormEvent<HTMLSelectElement>) => {
     const value = e.currentTarget.value;
@@ -74,38 +95,17 @@ export function Home() {
     }));
   };
 
-  //Submit Modal
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log(formData);
-
-    if (formData.movieName !== "") {
-      //Add timestamp
-      const formDataCopy = {
-        ...formData,
-        timestamp: serverTimestamp(),
-      };
-
-      // Add form data to collection
-      await addDoc(collection(db, "wantToWatch"), formDataCopy);
-      console.log("Saved!");
-      setFormData((prevState) => ({
-        ...prevState,
-        movieName: "",
-      }));
-      setModal(false);
-      handleReset();
-      navigate("/");
-    } else {
-      alert("Enter movie name");
-    }
-  };
-
+  //Delete From Want to Watch
   const onDelete = async (id: string) => {
     await deleteDoc(doc(db, "wantToWatch", id));
     const updatedList = movies.filter((item) => item.id !== id);
     setMovies(updatedList);
     console.log("Movie Deleted");
+  };
+
+  const onWatchedClick = (id: string) => {
+    setRateModal(!rateModal);
+    // onDelete(id);
   };
 
   return (
@@ -146,7 +146,11 @@ export function Home() {
                 </td>
                 <td>
                   <label>
-                    <input type="checkbox" className="checkbox" />
+                    <input
+                      onClick={() => onWatchedClick(movie.id)}
+                      type="checkbox"
+                      className="checkbox"
+                    />
                   </label>
                 </td>
 
@@ -161,8 +165,13 @@ export function Home() {
         </table>
       </div>
 
+      {rateModal && (
+        <RateModal rateModal={rateModal} setRateModal={setRateModal} />
+      )}
+
       {/* ADD MOVIE MODAL */}
       <input
+        readOnly
         type="checkbox"
         id="my-modal-3"
         checked={modal}
