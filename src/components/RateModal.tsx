@@ -9,8 +9,6 @@ type RateModalProps = {
 
 export function RateModal({ rateModal, setRateModal }: RateModalProps) {
   const [formData, setFormData] = useState({ rating: "", date: "" });
-  const [dateEntered, setDateEntered] = useState("");
-  const [rate, setRate] = useState("0");
 
   const onCloseClick = () => {
     setRateModal(false);
@@ -159,7 +157,6 @@ export function RateModal({ rateModal, setRateModal }: RateModalProps) {
               className="input input-bordered input-primary-focus ml-3"
               type="date"
               id="date"
-              //   onClick={(e) => setDateEntered(e.currentTarget.value)}
             />
           </div>
 
