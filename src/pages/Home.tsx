@@ -25,6 +25,9 @@ export function Home() {
   const [movies, setMovies] = useState<movie[]>([]);
   const [rateModal, setRateModal] = useState(false);
   const [modal, setModal] = useState(false);
+  const [name, setName] = useState("");
+  const [genre, setGenre] = useState("");
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -103,9 +106,11 @@ export function Home() {
     console.log("Movie Deleted");
   };
 
-  const onWatchedClick = (id: string) => {
+  const onWatchedClick = (id: string, name: string, genre: string) => {
     setRateModal(!rateModal);
-    // onDelete(id);
+    setName(name);
+    setGenre(genre);
+    onDelete(id);
   };
 
   return (
@@ -147,7 +152,13 @@ export function Home() {
                 <td>
                   <label>
                     <input
-                      onClick={() => onWatchedClick(movie.id)}
+                      onClick={() =>
+                        onWatchedClick(
+                          movie.id,
+                          movie.data.movieName,
+                          movie.data.genre
+                        )
+                      }
                       type="checkbox"
                       className="checkbox"
                     />
@@ -166,7 +177,12 @@ export function Home() {
       </div>
 
       {rateModal && (
-        <RateModal rateModal={rateModal} setRateModal={setRateModal} />
+        <RateModal
+          name={name}
+          genre={genre}
+          rateModal={rateModal}
+          setRateModal={setRateModal}
+        />
       )}
 
       {/* ADD MOVIE MODAL */}

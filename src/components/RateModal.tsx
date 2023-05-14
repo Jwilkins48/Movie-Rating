@@ -1,14 +1,30 @@
-import { useState } from "react";
-import { serverTimestamp, addDoc, collection } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import {
+  serverTimestamp,
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { db } from "../../firebase.config";
 
 type RateModalProps = {
   rateModal: boolean;
+  name: string;
+  genre: string;
   setRateModal: (ratedModal: boolean) => void;
 };
 
-export function RateModal({ rateModal, setRateModal }: RateModalProps) {
-  const [formData, setFormData] = useState({ rating: "", date: "" });
+export function RateModal({
+  rateModal,
+  name,
+  genre,
+  setRateModal,
+}: RateModalProps) {
+  const [formData, setFormData] = useState({
+    rating: "",
+    date: "",
+  });
 
   const onCloseClick = () => {
     setRateModal(false);
@@ -36,6 +52,8 @@ export function RateModal({ rateModal, setRateModal }: RateModalProps) {
       //Add timestamp
       const formDataCopy = {
         ...formData,
+        genre: genre,
+        movieName: name,
         timestamp: serverTimestamp(),
       };
 
@@ -71,13 +89,21 @@ export function RateModal({ rateModal, setRateModal }: RateModalProps) {
           >
             ✕
           </label>
-          <h1 className="font-bold text-[23px] text-accent mt-1 title">
-            How Did You Like It?
+          <h1 className="font-bold text-[23px] text-accent mt-4 title">
+            How Did You Like <span className="">{name}?</span>
           </h1>
-          <div className="mt-5">
-            <label htmlFor="date">Rating:</label>
+
+          <div className="mt-5 flex items-center">
+            <label className="text-[1.3rem] font-bold" htmlFor="rate">
+              Rating:
+            </label>
             <div className="rating rating-lg rating-half">
-              <input type="radio" name="rating-10" className="rating-hidden" />
+              <input
+                id="rate"
+                type="radio"
+                name="rating-10"
+                className="rating-hidden"
+              />
               <input
                 id=".5"
                 type="radio"
@@ -150,8 +176,10 @@ export function RateModal({ rateModal, setRateModal }: RateModalProps) {
               />
             </div>
           </div>
-          <div className="mt-5">
-            <label htmlFor="date">Date Watched:</label>
+          <div className="mt-5 flex items-center">
+            <label className="text-[1.2rem] font-bold" htmlFor="date">
+              Watched:
+            </label>
             <input
               onChange={onDateChange}
               className="input input-bordered input-primary-focus ml-3"
@@ -160,9 +188,11 @@ export function RateModal({ rateModal, setRateModal }: RateModalProps) {
             />
           </div>
 
-          <button type="submit" className="btn">
-            Add Rating
-          </button>
+          <div className="mt-5">
+            <button type="submit" className="btn w-full">
+              Add Rating
+            </button>
+          </div>
         </div>
       </form>
     </>
