@@ -8,7 +8,7 @@ import { setDoc, doc } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-interface formInfo {
+interface formInfoProps {
   name: string;
   email: string;
   password?: string;
@@ -19,7 +19,7 @@ export function SignUp() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState<formInfo>({
+  const [formData, setFormData] = useState<formInfoProps>({
     name: "",
     email: "",
     password: "",
