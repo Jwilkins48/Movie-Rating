@@ -14,6 +14,7 @@ import {
   query,
   serverTimestamp,
 } from "firebase/firestore";
+import { Select } from "../Assets/Select";
 
 interface movie {
   data: DocumentData;
@@ -214,29 +215,8 @@ export function Home() {
               id="movieName"
             />
           </div>
-          <div>
-            <select
-              className="select input-bordered input-primary-focus w-full my-4"
-              placeholder="Genre"
-              id="genre"
-              defaultValue="Genre"
-              onClick={onSelectChange}
-            >
-              <option disabled>Genre</option>
-              <option>Romance</option>
-              <option>Drama</option>
-              <option>Comedy</option>
-              <option>Action</option>
-              <option>Adventure</option>
-              <option>Western</option>
-              <option>Thriller</option>
-              <option>Horror</option>
-              <option>Fantasy</option>
-              <option>Sci-fi</option>
-              <option>Other</option>
-            </select>
-          </div>
 
+          <Select onChange={onSelectChange} />
           <button type="submit" className="btn ">
             <i className="mr-2 fa-solid fa-plus"></i> Add Movie
           </button>
