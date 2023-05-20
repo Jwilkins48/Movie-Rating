@@ -1,15 +1,16 @@
 type SelectProps = {
+  genre?: string;
   onChange: (e: React.FormEvent<HTMLSelectElement>) => void;
 };
 
-export function Select({ onChange }: SelectProps) {
+export function Select({ genre, onChange }: SelectProps) {
   return (
     <div>
       <select
         className="select input-bordered input-primary-focus w-full my-4"
         placeholder="Genre"
         id="genre"
-        defaultValue="Genre"
+        defaultValue={genre ? genre : "Genre"}
         onClick={onChange}
       >
         <option disabled>Genre</option>

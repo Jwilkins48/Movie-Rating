@@ -1,6 +1,7 @@
 import { DocumentData, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useState, useEffect } from "react";
 import { db } from "../../firebase.config";
+import { Select } from "../Assets/Select";
 
 type RatedCardProps = {
   movie: DocumentData;
@@ -8,30 +9,38 @@ type RatedCardProps = {
 };
 
 export function RatedCard({ movie, onDelete }: RatedCardProps) {
-  const [formData, setFormData] = useState({ name: "", rating: "", date: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    genre: "",
+    rating: "",
+    date: "",
+  });
   const [activeMenu, setActiveMenu] = useState("");
   const [editModal, setEditModal] = useState(false);
 
   const [name, setName] = useState("");
+  const [genre, setGenre] = useState("");
   const [rate, setRate] = useState("");
   const [watched, setWatched] = useState("");
 
   //Default form info
   useEffect(() => {
     const fetchPost = async () => {
-      //fetching post with id matching params.postId
+      //fetching post with id matching movie id
       const docRef = doc(db, "ratedMovies", movie.id);
       const docSnap = await getDoc(docRef);
       // Set formData if rate exists
       if (docSnap.exists()) {
         const data = docSnap.data();
         const r = data.rating;
+        const g = data.genre;
         const d = data.date;
 
         setFormData((prevState) => ({
           ...prevState,
           rating: r,
           date: d,
+          genre: g,
         }));
       } else {
         console.log("No rated movies");
@@ -61,6 +70,16 @@ export function RatedCard({ movie, onDelete }: RatedCardProps) {
     setFormData((prevState) => ({
       ...prevState,
       movieName: name,
+    }));
+  };
+
+  //Edit genre
+  const onGenreChange = (e: React.FormEvent<HTMLSelectElement>) => {
+    const value = e.currentTarget.value;
+    setGenre(value);
+    setFormData((prevState) => ({
+      ...prevState,
+      genre: value,
     }));
   };
 
@@ -98,23 +117,38 @@ export function RatedCard({ movie, onDelete }: RatedCardProps) {
     <>
       <tr key={movie.id}>
         <th className="flex flex-col">
+          {/* Movie Name */}
           {editModal ? (
             <input
               onChange={onNameChange}
               defaultValue={movie.data.movieName}
-              className="input input-bordered input-primary-focus w-28 text-[13px]"
+              className="w-28 text-[13px]"
               type="text"
               id="name"
             />
           ) : (
             <div>{name ? name : movie.data.movieName}</div>
           )}
-          <span className="text-xs text-gray-400">{movie.data.genre}</span>
+
+          {/* Movie Genre */}
+          <span>
+            {editModal ? (
+              <Select
+                genre={genre ? genre : movie.data.genre}
+                onChange={onGenreChange}
+              />
+            ) : (
+              <span className="text-xs text-gray-400">
+                {genre ? genre : movie.data.genre}
+              </span>
+            )}
+          </span>
         </th>
         <td>
           <div className="flex items-center space-x-3">
             <div>
               <div className="font-bold">
+                {/* Movie Date */}
                 {editModal ? (
                   <input
                     onChange={onDateChange}
@@ -130,6 +164,7 @@ export function RatedCard({ movie, onDelete }: RatedCardProps) {
           </div>
         </td>
         <td>
+          {/* Movie Rate */}
           {editModal ? (
             <select onClick={onSelectChange}>
               <option className="font-bold">.5</option>
@@ -165,7 +200,7 @@ export function RatedCard({ movie, onDelete }: RatedCardProps) {
           >
             <ul>
               <li>
-                {/* open modal put in id */}
+                {/* Toggle Edit */}
                 {editModal ? (
                   <button onClick={onSubmit}>Update</button>
                 ) : (
