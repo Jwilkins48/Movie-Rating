@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase.config";
 import { RatedCard } from "../components/RatedCard";
+import { Filter } from "../Assets/Filter";
 
 interface rate {
   data: DocumentData;
@@ -24,12 +25,22 @@ interface rate {
 export function Rate() {
   const [ratedMovie, setRatedMovie] = useState<rate[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sort, setSort] = useState("DEFAULT");
   const pageSize = 6;
 
   useEffect(() => {
     const fetchMovies = async () => {
       const movieRef = collection(db, "ratedMovies");
-      const q = query(movieRef, orderBy("timestamp", "desc"), limit(pageSize));
+      const q =
+        sort === "DEFAULT"
+          ? query(movieRef, orderBy("timestamp"), limit(pageSize))
+          : sort === "ASC"
+          ? query(movieRef, orderBy("movieName", "asc"), limit(pageSize))
+          : sort === "DESC"
+          ? query(movieRef, orderBy("movieName", "desc"), limit(pageSize))
+          : sort === "GENRE"
+          ? query(movieRef, orderBy("genre", "asc"), limit(pageSize))
+          : query(movieRef, orderBy("timestamp"), limit(pageSize));
 
       const querySnap = await getDocs(q);
       const moviesArray: rate[] = [];
@@ -42,38 +53,44 @@ export function Rate() {
       setRatedMovie(moviesArray);
     };
     fetchMovies();
-  }, []);
+  }, [sort, setSort]);
 
   //Show Previous Movies in Pagination
   const previousMovies = async ({ item }: DocumentData) => {
-    try {
-      const movieRef = collection(db, "ratedMovies");
-      const previous = query(
-        movieRef,
-        orderBy("timestamp", "desc"),
-        endBefore(item.data.timestamp),
-        limitToLast(pageSize)
-      );
+    if (currentPage !== 1) {
+      try {
+        const movieRef = collection(db, "ratedMovies");
+        const previous = query(
+          movieRef,
+          orderBy("timestamp", "desc"),
+          endBefore(item.data.timestamp),
+          limitToLast(pageSize)
+        );
 
-      const previousSnap = await getDocs(previous);
-      const moviesArray: rate[] = [];
+        const previousSnap = await getDocs(previous);
+        const moviesArray: rate[] = [];
 
-      previousSnap.docs.map((doc) => {
-        return moviesArray.push({
-          id: doc.id,
-          data: doc.data(),
+        previousSnap.docs.map((doc) => {
+          return moviesArray.push({
+            id: doc.id,
+            data: doc.data(),
+          });
         });
-      });
 
-      setRatedMovie(moviesArray);
-      setCurrentPage(currentPage - 1);
-    } catch (error) {
-      console.log(error);
+        setRatedMovie(moviesArray);
+        setCurrentPage(currentPage - 1);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      alert("First Page");
     }
   };
 
   //Show Next Movies in Pagination
   const fetchNextMovies = async ({ item }: DocumentData) => {
+    console.log(currentPage);
+
     if (ratedMovie.length < pageSize) {
       alert("Thats all for now!");
     } else {
@@ -111,9 +128,14 @@ export function Rate() {
     console.log("Movie Deleted");
   };
 
+  const onFilterChange = (e: React.FormEvent<HTMLSelectElement>) => {
+    setSort(e.currentTarget.value);
+  };
+
   return (
     <div>
       <Tabs />
+      <Filter onChange={onFilterChange} />
 
       <div className="mt-6">
         <table className="table table-zebra w-full">
@@ -125,6 +147,7 @@ export function Rate() {
               <th></th>
             </tr>
           </thead>
+
           {/* Display movies in array */}
           <tbody>
             {ratedMovie.map((movie) => (
