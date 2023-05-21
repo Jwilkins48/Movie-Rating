@@ -27,7 +27,6 @@ export function Rate() {
   const [ratedMovie, setRatedMovie] = useState<rate[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useLocalStorage("sort", []);
-
   const pageSize = 4;
 
   useEffect(() => {
@@ -55,7 +54,6 @@ export function Rate() {
       setRatedMovie(moviesArray);
     };
     fetchMovies();
-    console.log(currentPage);
   }, [sort]);
 
   //Show Previous Movies in Pagination
@@ -185,14 +183,38 @@ export function Rate() {
     console.log("Movie Deleted");
   };
 
+  //Filter
   const onFilterChange = (e: React.FormEvent<HTMLSelectElement>) => {
     setSort(e.currentTarget.value);
+  };
+
+  //Search
+  const [state, setState] = useState<DocumentData>({
+    search: "",
+    list: [],
+  });
+  const handleChange = async (e: React.FormEvent<HTMLInputElement>) => {
+    const results = ratedMovie.filter((movie) => {
+      if (e.currentTarget.value === "") {
+        return ratedMovie;
+      }
+      return movie.data.movieName
+        .toLowerCase()
+        .includes(e.currentTarget.value.toLowerCase());
+    });
+    setState({
+      search: e.currentTarget.value,
+      list: results,
+    });
   };
 
   return (
     <div>
       <Tabs />
       <Filter sort={sort} onChange={onFilterChange} />
+      <form>
+        <input type="search" value={state.search} onChange={handleChange} />
+      </form>
 
       <div className="mt-6">
         <table className="table table-zebra w-full">
@@ -206,11 +228,19 @@ export function Rate() {
           </thead>
 
           {/* Display movies in array */}
-          <tbody>
-            {ratedMovie.map((movie) => (
-              <RatedCard key={movie.id} onDelete={onDelete} movie={movie} />
-            ))}
-          </tbody>
+          {state.search === "" ? (
+            <tbody>
+              {ratedMovie.map((movie) => (
+                <RatedCard key={movie.id} onDelete={onDelete} movie={movie} />
+              ))}
+            </tbody>
+          ) : (
+            <tbody>
+              {state.list.map((movie: DocumentData) => (
+                <RatedCard key={movie.id} onDelete={onDelete} movie={movie} />
+              ))}
+            </tbody>
+          )}
         </table>
         <div className="flex w-full justify-center items-center gap-2 mt-2">
           <button onClick={() => previousMovies({ item: ratedMovie[0] })}>
