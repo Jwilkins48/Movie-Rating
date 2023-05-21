@@ -1,8 +1,9 @@
 type FilterProps = {
+  sort: string;
   onChange: (e: React.FormEvent<HTMLSelectElement>) => void;
 };
 
-export function Filter({ onChange }: FilterProps) {
+export function Filter({ sort, onChange }: FilterProps) {
   return (
     <select
       className="select input-bordered input-primary-focus w-full my-4"
@@ -10,10 +11,10 @@ export function Filter({ onChange }: FilterProps) {
       onClick={onChange}
     >
       <option disabled>Filter</option>
-      <option>DEFAULT</option>
-      <option>ASC</option>
-      <option>DESC</option>
-      <option>GENRE</option>
+      <option selected={sort == "DEFAULT" ? true : false}>DEFAULT</option>
+      <option selected={sort == "ASC" ? true : false}>ASC</option>
+      <option selected={sort == "DESC" ? true : false}>DESC</option>
+      <option selected={sort == "GENRE" ? true : false}>GENRE</option>
     </select>
   );
 }

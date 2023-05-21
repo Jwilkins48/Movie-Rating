@@ -16,6 +16,7 @@ import {
 import { db } from "../../firebase.config";
 import { RatedCard } from "../components/RatedCard";
 import { Filter } from "../Assets/Filter";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 interface rate {
   data: DocumentData;
@@ -25,22 +26,23 @@ interface rate {
 export function Rate() {
   const [ratedMovie, setRatedMovie] = useState<rate[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sort, setSort] = useState("DEFAULT");
-  const pageSize = 6;
+  const [sort, setSort] = useLocalStorage("sort", []);
+
+  const pageSize = 4;
 
   useEffect(() => {
     const fetchMovies = async () => {
       const movieRef = collection(db, "ratedMovies");
       const q =
         sort === "DEFAULT"
-          ? query(movieRef, orderBy("timestamp"), limit(pageSize))
+          ? query(movieRef, orderBy("timestamp", "desc"), limit(pageSize))
           : sort === "ASC"
           ? query(movieRef, orderBy("movieName", "asc"), limit(pageSize))
           : sort === "DESC"
           ? query(movieRef, orderBy("movieName", "desc"), limit(pageSize))
           : sort === "GENRE"
           ? query(movieRef, orderBy("genre", "asc"), limit(pageSize))
-          : query(movieRef, orderBy("timestamp"), limit(pageSize));
+          : query(movieRef, orderBy("timestamp", "desc"), limit(pageSize));
 
       const querySnap = await getDocs(q);
       const moviesArray: rate[] = [];
@@ -53,19 +55,48 @@ export function Rate() {
       setRatedMovie(moviesArray);
     };
     fetchMovies();
-  }, [sort, setSort]);
+    console.log(currentPage);
+  }, [sort]);
 
   //Show Previous Movies in Pagination
   const previousMovies = async ({ item }: DocumentData) => {
     if (currentPage !== 1) {
       try {
         const movieRef = collection(db, "ratedMovies");
-        const previous = query(
-          movieRef,
-          orderBy("timestamp", "desc"),
-          endBefore(item.data.timestamp),
-          limitToLast(pageSize)
-        );
+        const previous =
+          sort === "DEFAULT"
+            ? query(
+                movieRef,
+                orderBy("timestamp", "desc"),
+                endBefore(item.data.timestamp),
+                limitToLast(pageSize + 1)
+              )
+            : sort === "ASC"
+            ? query(
+                movieRef,
+                orderBy("movieName", "asc"),
+                endBefore(item.data.movieName),
+                limitToLast(pageSize + 1)
+              )
+            : sort === "DESC"
+            ? query(
+                movieRef,
+                orderBy("movieName", "desc"),
+                endBefore(item.data.movieName),
+                limitToLast(pageSize + 1)
+              )
+            : sort === "GENRE"
+            ? query(
+                movieRef,
+                orderBy("genre", "asc"),
+                endBefore(item.data.genre),
+                limitToLast(pageSize + 1)
+              )
+            : query(
+                movieRef,
+                orderBy("timestamp", "desc"),
+                limitToLast(pageSize + 1)
+              );
 
         const previousSnap = await getDocs(previous);
         const moviesArray: rate[] = [];
@@ -76,9 +107,8 @@ export function Rate() {
             data: doc.data(),
           });
         });
-
-        setRatedMovie(moviesArray);
         setCurrentPage(currentPage - 1);
+        setRatedMovie(moviesArray);
       } catch (error) {
         console.log(error);
       }
@@ -89,19 +119,46 @@ export function Rate() {
 
   //Show Next Movies in Pagination
   const fetchNextMovies = async ({ item }: DocumentData) => {
-    console.log(currentPage);
-
     if (ratedMovie.length < pageSize) {
       alert("Thats all for now!");
     } else {
       try {
         const movieRef = collection(db, "ratedMovies");
-        const next = query(
-          movieRef,
-          orderBy("timestamp", "desc"),
-          startAfter(item.data.timestamp),
-          limit(pageSize)
-        );
+        const next =
+          sort === "DEFAULT"
+            ? query(
+                movieRef,
+                orderBy("timestamp", "desc"),
+                startAfter(item.data.timestamp),
+                limit(pageSize)
+              )
+            : sort === "ASC"
+            ? query(
+                movieRef,
+                orderBy("movieName", "asc"),
+                startAfter(item.data.movieName),
+                limit(pageSize)
+              )
+            : sort === "DESC"
+            ? query(
+                movieRef,
+                orderBy("movieName", "desc"),
+                startAfter(item.data.movieName),
+                limit(pageSize)
+              )
+            : sort === "GENRE"
+            ? query(
+                movieRef,
+                orderBy("genre", "asc"),
+                startAfter(item.data.genre),
+                limit(pageSize)
+              )
+            : query(
+                movieRef,
+                orderBy("timestamp", "desc"),
+                startAfter(item.data.timestamp),
+                limit(pageSize)
+              );
 
         const nextSnap = await getDocs(next);
         const moviesArray: rate[] = [];
@@ -135,7 +192,7 @@ export function Rate() {
   return (
     <div>
       <Tabs />
-      <Filter onChange={onFilterChange} />
+      <Filter sort={sort} onChange={onFilterChange} />
 
       <div className="mt-6">
         <table className="table table-zebra w-full">
