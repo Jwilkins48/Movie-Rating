@@ -23,56 +23,16 @@ interface rate {
 
 export function Rate() {
   const [ratedMovie, setRatedMovie] = useState<rate[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
 
   useEffect(() => {
     const fetchMovies = async () => {
-      try {
-        const movieRef = collection(db, "ratedMovies");
-        const q = query(movieRef, orderBy("timestamp", "desc"), limit(6));
-
-        const querySnap = await getDocs(q);
-        const moviesArray: rate[] = [];
-
-        querySnap.forEach((doc) => {
-          return moviesArray.push({
-            id: doc.id,
-            data: doc.data(),
-          });
-        });
-        setRatedMovie(moviesArray);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchMovies();
-  }, []);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [postPerPage, setPostPerPage] = useState(4);
-  const lastPostIndex = currentPage * postPerPage;
-  const firstPostIndex = lastPostIndex - postPerPage;
-  const currentPost = ratedMovie.slice(firstPostIndex, lastPostIndex);
-  const totalPosts = ratedMovie.length;
-
-  const previous = async () => {
-    const first = query(
-      collection(db, "ratedMovies"),
-      orderBy("timestamp", "desc")
-    );
-    const shots = await getDocs(first);
-    const lastVisible = shots.docs[shots.docs.length - 1];
-
-    const fetchPreviousPage = async () => {
       const movieRef = collection(db, "ratedMovies");
-      const q = query(
-        movieRef,
-        orderBy("timestamp", "desc"),
-        endBefore(lastVisible),
-        limitToLast(7)
-      );
+      const q = query(movieRef, orderBy("timestamp", "desc"), limit(pageSize));
+
       const querySnap = await getDocs(q);
       const moviesArray: rate[] = [];
-
       querySnap.forEach((doc) => {
         return moviesArray.push({
           id: doc.id,
@@ -80,47 +40,64 @@ export function Rate() {
         });
       });
       setRatedMovie(moviesArray);
-      if (currentPage >= 1) {
-        setCurrentPage((prevCurrentPage) => prevCurrentPage - 1);
-      }
     };
-    fetchPreviousPage();
+    fetchMovies();
+  }, []);
+
+  const previousMovies = async ({ item }: DocumentData) => {
+    try {
+      const movieRef = collection(db, "ratedMovies");
+      const previous = query(
+        movieRef,
+        orderBy("timestamp", "desc"),
+        endBefore(item.data.timestamp),
+        limitToLast(pageSize)
+      );
+
+      const previousSnap = await getDocs(previous);
+      const moviesArray: rate[] = [];
+
+      previousSnap.docs.map((doc) => {
+        return moviesArray.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+
+      setRatedMovie(moviesArray);
+      setCurrentPage(currentPage - 1);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  //Next in Pagination
-  const next = async () => {
-    const first = query(
-      collection(db, "ratedMovies"),
-      orderBy("timestamp", "desc"),
-      limit(8)
-    );
-    const shots = await getDocs(first);
-    const lastVisible = shots.docs[shots.docs.length - 1];
-
-    if (ratedMovie.length === 0) {
-      alert("Thats All!");
+  const fetchNextMovies = async ({ item }: DocumentData) => {
+    if (ratedMovie.length < pageSize) {
+      alert("Thats all for now!");
     } else {
-      const fetchNextPage = async () => {
+      try {
         const movieRef = collection(db, "ratedMovies");
-        const q = query(
+        const next = query(
           movieRef,
           orderBy("timestamp", "desc"),
-          startAfter(lastVisible),
-          limit(8)
+          startAfter(item.data.timestamp),
+          limit(pageSize)
         );
-        const querySnap = await getDocs(q);
-        const moviesArray: rate[] = [];
 
-        querySnap.forEach((doc) => {
+        const nextSnap = await getDocs(next);
+        const moviesArray: rate[] = [];
+        nextSnap.docs.map((doc) => {
           return moviesArray.push({
             id: doc.id,
             data: doc.data(),
           });
         });
+
         setRatedMovie(moviesArray);
-        setCurrentPage((prevCurrentPage) => prevCurrentPage + 1);
-      };
-      fetchNextPage();
+        setCurrentPage(currentPage + 1);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -154,11 +131,19 @@ export function Rate() {
           </tbody>
         </table>
         <div className="flex w-full justify-center items-center gap-2 mt-2">
-          <button onClick={previous}>Next</button>
+          <button onClick={() => previousMovies({ item: ratedMovie[0] })}>
+            Back
+          </button>
           <div className="divider h-10">
             <i className="fa-solid fa-ghost" />
           </div>
-          <button onClick={next}>Next</button>
+          <button
+            onClick={() =>
+              fetchNextMovies({ item: ratedMovie[ratedMovie.length - 1] })
+            }
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>
