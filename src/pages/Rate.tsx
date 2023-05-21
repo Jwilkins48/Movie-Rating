@@ -44,6 +44,7 @@ export function Rate() {
     fetchMovies();
   }, []);
 
+  //Show Previous Movies in Pagination
   const previousMovies = async ({ item }: DocumentData) => {
     try {
       const movieRef = collection(db, "ratedMovies");
@@ -71,6 +72,7 @@ export function Rate() {
     }
   };
 
+  //Show Next Movies in Pagination
   const fetchNextMovies = async ({ item }: DocumentData) => {
     if (ratedMovie.length < pageSize) {
       alert("Thats all for now!");
