@@ -7,6 +7,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase.config";
+import { getAuth } from "firebase/auth";
 
 type RateModalProps = {
   rateModal: boolean;
@@ -48,12 +49,14 @@ export function RateModal({
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const auth = getAuth();
     if (formData.rating !== "") {
       //Add timestamp
       const formDataCopy = {
         ...formData,
         genre: genre,
         movieName: name,
+        userRef: auth.currentUser?.uid,
         timestamp: serverTimestamp(),
       };
 

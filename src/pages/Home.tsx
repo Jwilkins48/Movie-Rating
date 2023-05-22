@@ -13,8 +13,10 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  where,
 } from "firebase/firestore";
 import { Select } from "../Assets/Select";
+import { getAuth } from "firebase/auth";
 
 interface movie {
   data: DocumentData;
@@ -32,10 +34,15 @@ export function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const auth = getAuth();
     const fetchMovies = async () => {
       try {
         const movieRef = collection(db, "wantToWatch");
-        const q = query(movieRef, orderBy("timestamp", "desc"));
+        const q = query(
+          movieRef,
+          orderBy("timestamp", "desc"),
+          where("userRef", "==", auth.currentUser?.uid)
+        );
 
         const querySnap = await getDocs(q);
         const moviesArray: movie[] = [];
@@ -52,6 +59,7 @@ export function Home() {
         console.log(error);
       }
     };
+
     fetchMovies();
   }, [modal]);
 
@@ -59,11 +67,12 @@ export function Home() {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(formData);
-
+    const auth = getAuth();
     if (formData.movieName !== "") {
       //Add timestamp
       const formDataCopy = {
         ...formData,
+        userRef: auth.currentUser?.uid,
         timestamp: serverTimestamp(),
       };
 

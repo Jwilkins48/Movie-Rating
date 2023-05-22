@@ -7,13 +7,16 @@ import { ForgotPassword } from "./pages/ForgotPassword";
 import { Profile } from "./pages/Profile";
 import { Rate } from "./pages/Rate";
 import { Spin } from "./pages/Spin";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   return (
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<PrivateRoute />}>
+          <Route path="/" element={<Home />} />
+        </Route>
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

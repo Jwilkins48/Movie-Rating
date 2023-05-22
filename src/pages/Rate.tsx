@@ -12,11 +12,13 @@ import {
   orderBy,
   query,
   startAfter,
+  where,
 } from "firebase/firestore";
 import { db } from "../../firebase.config";
 import { RatedCard } from "../components/RatedCard";
 import { Filter } from "../Assets/Filter";
 import useLocalStorage from "../hooks/useLocalStorage";
+import { getAuth } from "firebase/auth";
 
 interface rate {
   data: DocumentData;
@@ -28,20 +30,46 @@ export function Rate() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useLocalStorage("sort", []);
   const pageSize = 4;
-
+  const auth = getAuth();
   useEffect(() => {
     const fetchMovies = async () => {
+      const auth = getAuth();
       const movieRef = collection(db, "ratedMovies");
       const q =
         sort === "DEFAULT"
-          ? query(movieRef, orderBy("timestamp", "desc"), limit(pageSize))
+          ? query(
+              movieRef,
+              where("userRef", "==", auth.currentUser?.uid),
+              orderBy("timestamp", "desc"),
+              limit(pageSize)
+            )
           : sort === "ASC"
-          ? query(movieRef, orderBy("movieName", "asc"), limit(pageSize))
+          ? query(
+              movieRef,
+              where("userRef", "==", auth.currentUser?.uid),
+              orderBy("movieName", "asc"),
+              limit(pageSize)
+            )
           : sort === "DESC"
-          ? query(movieRef, orderBy("movieName", "desc"), limit(pageSize))
+          ? query(
+              movieRef,
+              where("userRef", "==", auth.currentUser?.uid),
+              orderBy("movieName", "desc"),
+              limit(pageSize)
+            )
           : sort === "GENRE"
-          ? query(movieRef, orderBy("genre", "asc"), limit(pageSize))
-          : query(movieRef, orderBy("timestamp", "desc"), limit(pageSize));
+          ? query(
+              movieRef,
+              where("userRef", "==", auth.currentUser?.uid),
+              orderBy("genre", "asc"),
+              limit(pageSize)
+            )
+          : query(
+              movieRef,
+              where("userRef", "==", auth.currentUser?.uid),
+              orderBy("timestamp", "desc"),
+              limit(pageSize)
+            );
 
       const querySnap = await getDocs(q);
       const moviesArray: rate[] = [];
@@ -60,11 +88,13 @@ export function Rate() {
   const previousMovies = async ({ item }: DocumentData) => {
     if (currentPage !== 1) {
       try {
+        const auth = getAuth();
         const movieRef = collection(db, "ratedMovies");
         const previous =
           sort === "DEFAULT"
             ? query(
                 movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
                 orderBy("timestamp", "desc"),
                 endBefore(item.data.timestamp),
                 limitToLast(pageSize + 1)
@@ -72,6 +102,7 @@ export function Rate() {
             : sort === "ASC"
             ? query(
                 movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
                 orderBy("movieName", "asc"),
                 endBefore(item.data.movieName),
                 limitToLast(pageSize + 1)
@@ -79,6 +110,7 @@ export function Rate() {
             : sort === "DESC"
             ? query(
                 movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
                 orderBy("movieName", "desc"),
                 endBefore(item.data.movieName),
                 limitToLast(pageSize + 1)
@@ -86,12 +118,14 @@ export function Rate() {
             : sort === "GENRE"
             ? query(
                 movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
                 orderBy("genre", "asc"),
                 endBefore(item.data.genre),
                 limitToLast(pageSize + 1)
               )
             : query(
                 movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
                 orderBy("timestamp", "desc"),
                 limitToLast(pageSize + 1)
               );
@@ -126,6 +160,7 @@ export function Rate() {
           sort === "DEFAULT"
             ? query(
                 movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
                 orderBy("timestamp", "desc"),
                 startAfter(item.data.timestamp),
                 limit(pageSize)
@@ -133,6 +168,7 @@ export function Rate() {
             : sort === "ASC"
             ? query(
                 movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
                 orderBy("movieName", "asc"),
                 startAfter(item.data.movieName),
                 limit(pageSize)
@@ -140,6 +176,7 @@ export function Rate() {
             : sort === "DESC"
             ? query(
                 movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
                 orderBy("movieName", "desc"),
                 startAfter(item.data.movieName),
                 limit(pageSize)
@@ -147,12 +184,14 @@ export function Rate() {
             : sort === "GENRE"
             ? query(
                 movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
                 orderBy("genre", "asc"),
                 startAfter(item.data.genre),
                 limit(pageSize)
               )
             : query(
                 movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
                 orderBy("timestamp", "desc"),
                 startAfter(item.data.timestamp),
                 limit(pageSize)

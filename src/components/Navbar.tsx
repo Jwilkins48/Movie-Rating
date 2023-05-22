@@ -25,7 +25,7 @@ export function Navbar() {
   const onLogout = () => {
     auth.signOut();
     setLoggedIn(false);
-    handleClick("/");
+    handleClick("/sign-in");
     alert("Signed Out!");
   };
 
