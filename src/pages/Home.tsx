@@ -14,9 +14,16 @@ import {
   query,
   serverTimestamp,
   where,
+  limitToLast,
+  endBefore,
+  startAfter,
+  limit,
 } from "firebase/firestore";
 import { Select } from "../Assets/Select";
 import { getAuth } from "firebase/auth";
+import useLocalStorage from "../hooks/useLocalStorage";
+import { Filter } from "../Assets/Filter";
+import { MovieCard } from "../components/movieCard";
 
 interface movie {
   data: DocumentData;
@@ -25,24 +32,59 @@ interface movie {
 
 export function Home() {
   const [formData, setFormData] = useState({ movieName: "", genre: "" });
+  const [sortWatch, setSortWatch] = useLocalStorage("sortWatch", []);
+  const [currentPage, setCurrentPage] = useState(1);
   const [movies, setMovies] = useState<movie[]>([]);
   const [rateModal, setRateModal] = useState(false);
   const [modal, setModal] = useState(false);
-  const [name, setName] = useState("");
   const [genre, setGenre] = useState("");
+  const [name, setName] = useState("");
 
   const navigate = useNavigate();
+  const auth = getAuth();
+  const pageSize = 4;
 
   useEffect(() => {
     const auth = getAuth();
     const fetchMovies = async () => {
       try {
         const movieRef = collection(db, "wantToWatch");
-        const q = query(
-          movieRef,
-          orderBy("timestamp", "desc"),
-          where("userRef", "==", auth.currentUser?.uid)
-        );
+
+        const q =
+          sortWatch === "DEFAULT"
+            ? query(
+                movieRef,
+                orderBy("timestamp", "desc"),
+                where("userRef", "==", auth.currentUser?.uid),
+                limit(pageSize)
+              )
+            : sortWatch === "ASC"
+            ? query(
+                movieRef,
+                orderBy("movieName", "asc"),
+                where("userRef", "==", auth.currentUser?.uid),
+                limit(pageSize)
+              )
+            : sortWatch === "DESC"
+            ? query(
+                movieRef,
+                orderBy("movieName", "desc"),
+                where("userRef", "==", auth.currentUser?.uid),
+                limit(pageSize)
+              )
+            : sortWatch === "GENRE"
+            ? query(
+                movieRef,
+                orderBy("genre", "desc"),
+                where("userRef", "==", auth.currentUser?.uid),
+                limit(pageSize)
+              )
+            : query(
+                movieRef,
+                orderBy("timestamp", "desc"),
+                where("userRef", "==", auth.currentUser?.uid),
+                limit(pageSize)
+              );
 
         const querySnap = await getDocs(q);
         const moviesArray: movie[] = [];
@@ -61,7 +103,7 @@ export function Home() {
     };
 
     fetchMovies();
-  }, [modal]);
+  }, [modal, sortWatch]);
 
   //Submit Modal
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -123,9 +165,168 @@ export function Home() {
     onDelete(id);
   };
 
+  //Filter
+  const onFilterChange = (e: React.FormEvent<HTMLSelectElement>) => {
+    setSortWatch(e.currentTarget.value);
+  };
+
+  //Show Previous Movies in Pagination
+  const previousMovies = async ({ item }: DocumentData) => {
+    if (currentPage !== 1) {
+      try {
+        const auth = getAuth();
+        const movieRef = collection(db, "wantToWatch");
+        const previous =
+          sortWatch === "DEFAULT"
+            ? query(
+                movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
+                orderBy("timestamp", "desc"),
+                endBefore(item.data.timestamp),
+                limitToLast(pageSize + 1)
+              )
+            : sortWatch === "ASC"
+            ? query(
+                movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
+                orderBy("movieName", "asc"),
+                endBefore(item.data.movieName),
+                limitToLast(pageSize + 1)
+              )
+            : sortWatch === "DESC"
+            ? query(
+                movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
+                orderBy("movieName", "desc"),
+                endBefore(item.data.movieName),
+                limitToLast(pageSize + 1)
+              )
+            : sortWatch === "GENRE"
+            ? query(
+                movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
+                orderBy("genre", "asc"),
+                endBefore(item.data.genre),
+                limitToLast(pageSize + 1)
+              )
+            : query(
+                movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
+                orderBy("timestamp", "desc"),
+                limitToLast(pageSize + 1)
+              );
+
+        const previousSnap = await getDocs(previous);
+        const moviesArray: movie[] = [];
+
+        previousSnap.docs.map((doc) => {
+          return moviesArray.push({
+            id: doc.id,
+            data: doc.data(),
+          });
+        });
+        setCurrentPage(currentPage - 1);
+        setMovies(moviesArray);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      alert("First Page");
+    }
+  };
+
+  //Show Next Movies in Pagination
+  const fetchNextMovies = async ({ item }: DocumentData) => {
+    if (movies.length < pageSize) {
+      alert("Thats all for now!");
+    } else {
+      try {
+        const movieRef = collection(db, "wantToWatch");
+        const next =
+          sortWatch === "DEFAULT"
+            ? query(
+                movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
+                orderBy("timestamp", "desc"),
+                startAfter(item.data.timestamp),
+                limit(pageSize)
+              )
+            : sortWatch === "ASC"
+            ? query(
+                movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
+                orderBy("movieName", "asc"),
+                startAfter(item.data.movieName),
+                limit(pageSize)
+              )
+            : sortWatch === "DESC"
+            ? query(
+                movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
+                orderBy("movieName", "desc"),
+                startAfter(item.data.movieName),
+                limit(pageSize)
+              )
+            : sortWatch === "GENRE"
+            ? query(
+                movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
+                orderBy("genre", "asc"),
+                startAfter(item.data.genre),
+                limit(pageSize)
+              )
+            : query(
+                movieRef,
+                where("userRef", "==", auth.currentUser?.uid),
+                orderBy("timestamp", "desc"),
+                startAfter(item.data.timestamp),
+                limit(pageSize)
+              );
+
+        const nextSnap = await getDocs(next);
+        const moviesArray: movie[] = [];
+        nextSnap.docs.map((doc) => {
+          return moviesArray.push({
+            id: doc.id,
+            data: doc.data(),
+          });
+        });
+
+        setMovies(moviesArray);
+        setCurrentPage(currentPage + 1);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  //Search
+  const [state, setState] = useState<DocumentData>({
+    search: "",
+    list: [],
+  });
+  const handleChange = async (e: React.FormEvent<HTMLInputElement>) => {
+    const results = movies.filter((movie) => {
+      if (e.currentTarget.value === "") {
+        return movie;
+      }
+      return movie.data.movieName
+        .toLowerCase()
+        .includes(e.currentTarget.value.toLowerCase());
+    });
+    setState({
+      search: e.currentTarget.value,
+      list: results,
+    });
+  };
+
   return (
     <div>
       <Tabs />
+      <Filter sort={sortWatch} onChange={onFilterChange} />
+      <form>
+        <input type="search" value={state.search} onChange={handleChange} />
+      </form>
 
       <div className="overflow-x-auto mx-2 my-6">
         <label
@@ -148,42 +349,44 @@ export function Home() {
             </tr>
           </thead>
           {/* Display movies in array */}
-          <tbody>
-            {movies.map((movie) => (
-              <tr key={movie.id}>
-                <th>{movie.data.movieName}</th>
-                <td>
-                  <div className="flex items-center space-x-3">
-                    <div>
-                      <div className="font-bold">{movie.data.genre}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <label>
-                    <input
-                      onClick={() =>
-                        onWatchedClick(
-                          movie.id,
-                          movie.data.movieName,
-                          movie.data.genre
-                        )
-                      }
-                      type="checkbox"
-                      className="checkbox"
-                    />
-                  </label>
-                </td>
-
-                <td>
-                  <button onClick={() => onDelete(movie.id)}>
-                    <i className="fa-solid fa-xmark" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+          {state.search === "" ? (
+            <tbody>
+              {movies.map((movie) => (
+                <MovieCard
+                  key={movie.id}
+                  movie={movie}
+                  onClick={onWatchedClick}
+                  onDelete={onDelete}
+                />
+              ))}
+            </tbody>
+          ) : (
+            <tbody>
+              {state.list.map((movie: DocumentData) => (
+                <MovieCard
+                  key={movie.id}
+                  movie={movie}
+                  onClick={onWatchedClick}
+                  onDelete={onDelete}
+                />
+              ))}
+            </tbody>
+          )}
         </table>
+
+        <div className="flex w-full justify-center items-center gap-2 mt-2">
+          <button onClick={() => previousMovies({ item: movies[0] })}>
+            Back
+          </button>
+          <div className="divider h-10">
+            <i className="fa-solid fa-ghost" />
+          </div>
+          <button
+            onClick={() => fetchNextMovies({ item: movies[movies.length - 1] })}
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       {rateModal && (
