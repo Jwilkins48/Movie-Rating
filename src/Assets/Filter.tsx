@@ -6,7 +6,7 @@ type FilterProps = {
 export function Filter({ sort, onChange }: FilterProps) {
   return (
     <select
-      className="select input-bordered input-primary-focus w-full my-4"
+      className="select input-bordered input-primary-focus  my-3"
       placeholder="Filter"
       onClick={onChange}
     >

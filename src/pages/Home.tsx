@@ -23,7 +23,7 @@ import { Select } from "../Assets/Select";
 import { getAuth } from "firebase/auth";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { Filter } from "../Assets/Filter";
-import { MovieCard } from "../components/movieCard";
+import { MovieCard } from "../components/MovieCard";
 
 interface movie {
   data: DocumentData;
@@ -320,23 +320,39 @@ export function Home() {
     });
   };
 
+  const [searchOpen, setSearchOpen] = useState(false);
+  const onSearchClick = (e: React.FormEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setSearchOpen(!searchOpen);
+  };
+
   return (
     <div>
       <Tabs />
-      <Filter sort={sortWatch} onChange={onFilterChange} />
-      <form>
-        <input type="search" value={state.search} onChange={handleChange} />
-      </form>
-
       <div className="overflow-x-auto mx-2 my-6">
-        <label
-          onClick={() => setModal(true)}
-          htmlFor="my-modal-3"
-          className="btn mb-2"
-        >
-          + Add
-        </label>
+        {/* <form>
+          <button onClick={onSearchClick}>
+            <i className="fa-solid fa-magnifying-glass" />
+          </button>
+          <input
+            className={searchOpen ? "reveal-search" : "hide-search"}
+            type="search"
+            value={state.search}
+            onChange={handleChange}
+          />
+        </form> */}
 
+        <div className="w-full flex justify-between items-center">
+          <Filter sort={sortWatch} onChange={onFilterChange} />
+
+          <label
+            onClick={() => setModal(true)}
+            htmlFor="my-modal-3"
+            className="btn mb-2"
+          >
+            <i className=" fa-solid fa-plus mt-[.6px] mr-[.4rem]" /> Add
+          </label>
+        </div>
         <table className="table table-zebra w-full">
           <thead>
             <tr>
@@ -373,8 +389,7 @@ export function Home() {
             </tbody>
           )}
         </table>
-
-        <div className="flex w-full justify-center items-center gap-2 mt-2">
+        <div className="flex w-full justify-center items-center gap-2 mt-2 fixed bottom-0">
           <button onClick={() => previousMovies({ item: movies[0] })}>
             Back
           </button>
