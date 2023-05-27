@@ -61,22 +61,6 @@ font-family: 'Sigmar', cursive; . */
   transform-origin: bottom left;
 }
 
-/* Want To Watch Page */
-.hide-search {
-  width: 0px;
-  height: 2rem;
-  border-radius: 6px;
-  margin-left: 5px;
-  transition: width 0.75s ease-in-out;
-}
-.reveal-search {
-  width: 10rem;
-  height: 2rem;
-  border-radius: 6px;
-  margin-left: 5px;
-  transition: width 0.75s ease-in-out;
-}
-
 /* Rated Movie Page */
 .reveal {
   position: absolute;

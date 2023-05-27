@@ -9,11 +9,11 @@ type RatedCardProps = {
 export function MovieCard({ movie, onClick, onDelete }: RatedCardProps) {
   return (
     <tr key={movie.id}>
-      <th>{movie.data.movieName}</th>
+      <th className="t">{movie.data.movieName}</th>
       <td>
         <div className="flex items-center space-x-3">
           <div>
-            <div className="font-bold">{movie.data.genre}</div>
+            <div className="font-bold text-sm ">{movie.data.genre}</div>
           </div>
         </div>
       </td>

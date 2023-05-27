@@ -1,6 +1,6 @@
 import { RateModal } from "../components/RateModal";
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../../firebase.config";
 import { Tabs } from "../components/Tabs";
 import {
@@ -126,6 +126,11 @@ export function Home() {
       //Reset Form
       const resetForm = e.target as HTMLFormElement;
       resetForm.reset();
+
+      setFormData((prevState) => ({
+        ...prevState,
+        genre: "",
+      }));
       navigate("/");
     } else {
       alert("Enter movie name");
@@ -183,7 +188,7 @@ export function Home() {
                 where("userRef", "==", auth.currentUser?.uid),
                 orderBy("timestamp", "desc"),
                 endBefore(item.data.timestamp),
-                limitToLast(pageSize + 1)
+                limitToLast(pageSize)
               )
             : sortWatch === "ASC"
             ? query(
@@ -191,7 +196,7 @@ export function Home() {
                 where("userRef", "==", auth.currentUser?.uid),
                 orderBy("movieName", "asc"),
                 endBefore(item.data.movieName),
-                limitToLast(pageSize + 1)
+                limitToLast(pageSize)
               )
             : sortWatch === "DESC"
             ? query(
@@ -199,7 +204,7 @@ export function Home() {
                 where("userRef", "==", auth.currentUser?.uid),
                 orderBy("movieName", "desc"),
                 endBefore(item.data.movieName),
-                limitToLast(pageSize + 1)
+                limitToLast(pageSize)
               )
             : sortWatch === "GENRE"
             ? query(
@@ -207,13 +212,13 @@ export function Home() {
                 where("userRef", "==", auth.currentUser?.uid),
                 orderBy("genre", "asc"),
                 endBefore(item.data.genre),
-                limitToLast(pageSize + 1)
+                limitToLast(pageSize)
               )
             : query(
                 movieRef,
                 where("userRef", "==", auth.currentUser?.uid),
                 orderBy("timestamp", "desc"),
-                limitToLast(pageSize + 1)
+                limitToLast(pageSize)
               );
 
         const previousSnap = await getDocs(previous);
@@ -330,28 +335,21 @@ export function Home() {
     <div>
       <Tabs />
       <div className="overflow-x-auto mx-2 my-6">
-        {/* <form>
-          <button onClick={onSearchClick}>
-            <i className="fa-solid fa-magnifying-glass" />
-          </button>
-          <input
-            className={searchOpen ? "reveal-search" : "hide-search"}
-            type="search"
-            value={state.search}
-            onChange={handleChange}
-          />
-        </form> */}
-
         <div className="w-full flex justify-between items-center">
+          <div>
+            <form className="relative">
+              <button onClick={onSearchClick}>
+                <i className="fa-solid fa-magnifying-glass ml-3 absolute top-[10px] text-primary" />
+              </button>
+              <input
+                className="input input-bordered input-secondary py-4 md:w-60 w-52 h-8 rounded text-indigo-300 font-bold ml-1 pl-7"
+                type="search"
+                value={state.search}
+                onChange={handleChange}
+              />
+            </form>
+          </div>
           <Filter sort={sortWatch} onChange={onFilterChange} />
-
-          <label
-            onClick={() => setModal(true)}
-            htmlFor="my-modal-3"
-            className="btn mb-2"
-          >
-            <i className=" fa-solid fa-plus mt-[.6px] mr-[.4rem]" /> Add
-          </label>
         </div>
         <table className="table table-zebra w-full">
           <thead>
@@ -389,14 +387,29 @@ export function Home() {
             </tbody>
           )}
         </table>
+
+        <label
+          onClick={() => setModal(true)}
+          htmlFor="my-modal-3"
+          className="btn w-full mt-1"
+        >
+          <i className=" fa-solid fa-plus mt-[.6px] mr-[.4rem]" /> Add
+        </label>
+
         <div className="flex w-full justify-center items-center gap-2 mt-2 fixed bottom-0">
-          <button onClick={() => previousMovies({ item: movies[0] })}>
+          <button
+            className={currentPage == 1 ? "text-gray-500" : ""}
+            disabled={currentPage == 1 ? true : false}
+            onClick={() => previousMovies({ item: movies[0] })}
+          >
             Back
           </button>
           <div className="divider h-10">
             <i className="fa-solid fa-ghost" />
           </div>
           <button
+            className={movies.length < pageSize ? "text-gray-500" : ""}
+            disabled={movies.length < pageSize ? true : false}
             onClick={() => fetchNextMovies({ item: movies[movies.length - 1] })}
           >
             Next

@@ -30,6 +30,7 @@ export function Rate() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useLocalStorage("sort", []);
   const pageSize = 4;
+
   const auth = getAuth();
   useEffect(() => {
     const fetchMovies = async () => {
