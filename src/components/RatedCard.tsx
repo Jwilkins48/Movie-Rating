@@ -122,12 +122,14 @@ export function RatedCard({ movie, onDelete }: RatedCardProps) {
             <input
               onChange={onNameChange}
               defaultValue={movie.data.movieName}
-              className="w-28 text-[13px]"
+              className="w-28 text-[13px] rounded p-2 bg-secondary text-neutral"
               type="text"
               id="name"
             />
           ) : (
-            <div>{name ? name : movie.data.movieName}</div>
+            <div className="truncate w-24 text-sm">
+              {name ? name : movie.data.movieName}
+            </div>
           )}
 
           {/* Movie Genre */}
@@ -144,7 +146,7 @@ export function RatedCard({ movie, onDelete }: RatedCardProps) {
             )}
           </span>
         </th>
-        <td>
+        <td className={editModal ? "p-0" : ""}>
           <div className="flex items-center space-x-3">
             <div>
               <div className="font-bold">
@@ -152,12 +154,14 @@ export function RatedCard({ movie, onDelete }: RatedCardProps) {
                 {editModal ? (
                   <input
                     onChange={onDateChange}
-                    className="input input-bordered input-primary-focus w-28 text-[13px] p-1"
+                    className="input input-bordered input-primary-focus w-28 text-[13px] p-1 mt-9"
                     type="date"
                     id="date"
                   />
                 ) : (
-                  <div>{watched ? watched : movie.data.date}</div>
+                  <div className="text-sm">
+                    {watched ? watched : movie.data.date}
+                  </div>
                 )}
               </div>
             </div>
@@ -166,7 +170,10 @@ export function RatedCard({ movie, onDelete }: RatedCardProps) {
         <td>
           {/* Movie Rate */}
           {editModal ? (
-            <select onClick={onSelectChange}>
+            <select
+              className="p-0 mt-4 rounded bg-primary text-neutral"
+              onClick={onSelectChange}
+            >
               <option className="font-bold">.5</option>
               <option className="font-bold">1</option>
               <option className="font-bold">1.5</option>
@@ -187,14 +194,16 @@ export function RatedCard({ movie, onDelete }: RatedCardProps) {
           )}
         </td>
 
-        <td>
+        <td className="relative">
           <button onClick={toggleActive}>
             <i className="fa-solid fa-angle-down" />
           </button>
           <div
             className={
-              activeMenu === movie.id
-                ? "reveal bg-secondary text-neutral"
+              activeMenu === movie.id && editModal
+                ? "reveal bg-secondary text-neutral top-[98px] z-10"
+                : activeMenu === movie.id
+                ? "reveal bg-secondary text-neutral z-10"
                 : "hide"
             }
           >

@@ -1,30 +1,29 @@
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 export function Tabs() {
-  const params = useParams();
+  const links = [
+    { id: 0, title: "Want To Watch", path: "/" },
+    { id: 1, title: "Rated Movies", path: "/rate" },
+    { id: 2, title: "Spin", path: "/spin" },
+  ];
+
+  const [active, setActive] = useLocalStorage("active", []);
 
   return (
     <ul className="flex justify-evenly mt-[4rem] text-indigo-300 font-bold tabs text-[18px]">
-      <Link
-        className={"hover animate__animated animate__fadeInDown tabAnimate one"}
-        to="/"
-      >
-        Want To Watch
-      </Link>
-      <Link
-        className={"hover animate__animated animate__fadeInDown tabAnimate two"}
-        to="/rate"
-      >
-        Rated Movies
-      </Link>
-      <Link
-        className={
-          "hover animate__animated animate__fadeInDown tabAnimate three"
-        }
-        to="/spin"
-      >
-        Spin
-      </Link>
+      {links.map((tab) => (
+        <div key={tab.id} id={tab.id.toString()}>
+          <Link className="link" to={tab.path}>
+            <li
+              className={tab.id === active ? "underline hover" : " hover"}
+              onClick={() => setActive(tab.id)}
+            >
+              {tab.title}
+            </li>
+          </Link>
+        </div>
+      ))}
     </ul>
   );
 }

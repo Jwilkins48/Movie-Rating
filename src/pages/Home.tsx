@@ -42,7 +42,7 @@ export function Home() {
 
   const navigate = useNavigate();
   const auth = getAuth();
-  const pageSize = 4;
+  const pageSize = 5;
 
   useEffect(() => {
     const auth = getAuth();

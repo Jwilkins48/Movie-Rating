@@ -29,7 +29,7 @@ export function Rate() {
   const [ratedMovie, setRatedMovie] = useState<rate[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useLocalStorage("sort", []);
-  const pageSize = 4;
+  const pageSize = 5;
 
   const auth = getAuth();
   useEffect(() => {
@@ -251,51 +251,71 @@ export function Rate() {
   return (
     <div>
       <Tabs />
-      <Filter sort={sort} onChange={onFilterChange} />
-      <form>
-        <input type="search" value={state.search} onChange={handleChange} />
-      </form>
-
-      <div className="mt-6">
-        <table className="table table-zebra w-full">
-          <thead>
-            <tr>
-              <th>Movie</th>
-              <th>Watched On</th>
-              <th>Rated</th>
-              <th></th>
-            </tr>
-          </thead>
-
-          {/* Display movies in array */}
-          {state.search === "" ? (
-            <tbody>
-              {ratedMovie.map((movie) => (
-                <RatedCard key={movie.id} onDelete={onDelete} movie={movie} />
-              ))}
-            </tbody>
-          ) : (
-            <tbody>
-              {state.list.map((movie: DocumentData) => (
-                <RatedCard key={movie.id} onDelete={onDelete} movie={movie} />
-              ))}
-            </tbody>
-          )}
-        </table>
-        <div className="flex w-full justify-center items-center gap-2 mt-2">
-          <button onClick={() => previousMovies({ item: ratedMovie[0] })}>
-            Back
-          </button>
-          <div className="divider h-10">
-            <i className="fa-solid fa-ghost" />
+      <div className="overflow-x-hidden mx-1 mt-6">
+        <div className="w-full flex justify-between items-center">
+          <div>
+            <form className="relative">
+              <button>
+                <i className="fa-solid fa-magnifying-glass ml-3 absolute top-[10px] text-primary" />
+              </button>
+              <input
+                className="input input-bordered input-secondary py-4 md:w-60 w-52 h-8 rounded text-indigo-300 font-bold ml-1 pl-7"
+                type="search"
+                value={state.search}
+                onChange={handleChange}
+              />
+            </form>
           </div>
-          <button
-            onClick={() =>
-              fetchNextMovies({ item: ratedMovie[ratedMovie.length - 1] })
-            }
-          >
-            Next
-          </button>
+          <Filter sort={sort} onChange={onFilterChange} />
+        </div>
+
+        <div>
+          <table className="table table-zebra w-full">
+            <thead>
+              <tr>
+                <th>Movie</th>
+                <th>Watched On</th>
+                <th>Rated</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            {/* Display movies in array */}
+            {state.search === "" ? (
+              <tbody>
+                {ratedMovie.map((movie) => (
+                  <RatedCard key={movie.id} onDelete={onDelete} movie={movie} />
+                ))}
+              </tbody>
+            ) : (
+              <tbody>
+                {state.list.map((movie: DocumentData) => (
+                  <RatedCard key={movie.id} onDelete={onDelete} movie={movie} />
+                ))}
+              </tbody>
+            )}
+          </table>
+          <div className="flex w-full justify-center items-center gap-2 mt-2">
+            <button
+              disabled={currentPage == 1 ? true : false}
+              className={currentPage == 1 ? "text-gray-500" : ""}
+              onClick={() => previousMovies({ item: ratedMovie[0] })}
+            >
+              Back
+            </button>
+            <div className="divider h-10">
+              <i className="fa-solid fa-ghost" />
+            </div>
+            <button
+              disabled={ratedMovie.length < pageSize ? true : false}
+              className={ratedMovie.length < pageSize ? "text-gray-500" : ""}
+              onClick={() =>
+                fetchNextMovies({ item: ratedMovie[ratedMovie.length - 1] })
+              }
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>
