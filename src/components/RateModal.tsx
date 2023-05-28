@@ -64,7 +64,6 @@ export function RateModal({
       await addDoc(collection(db, "ratedMovies"), formDataCopy);
       console.log("rated!");
       setRateModal(false);
-
       //Reset Form
       const resetForm = e.target as HTMLFormElement;
       resetForm.reset();

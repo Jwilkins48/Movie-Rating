@@ -115,19 +115,19 @@ export function RatedCard({ movie, onDelete }: RatedCardProps) {
 
   return (
     <>
-      <tr key={movie.id}>
+      <tr className="" key={movie.id}>
         <th className="flex flex-col">
           {/* Movie Name */}
           {editModal ? (
             <input
               onChange={onNameChange}
               defaultValue={movie.data.movieName}
-              className="w-28 text-[13px] rounded p-2 bg-secondary text-neutral"
+              className="w-28 lg:w-80 text-[13px] rounded p-2 bg-secondary text-neutral"
               type="text"
               id="name"
             />
           ) : (
-            <div className="truncate w-24 text-sm">
+            <div className="truncate w-24 text-sm lg:overflow-visible lg:text-lg">
               {name ? name : movie.data.movieName}
             </div>
           )}
@@ -171,7 +171,7 @@ export function RatedCard({ movie, onDelete }: RatedCardProps) {
           {/* Movie Rate */}
           {editModal ? (
             <select
-              className="p-0 mt-4 rounded bg-primary text-neutral"
+              className="p-0 mt-4 lg:mt-10 rounded bg-primary text-neutral"
               onClick={onSelectChange}
             >
               <option className="font-bold">.5</option>
@@ -201,9 +201,9 @@ export function RatedCard({ movie, onDelete }: RatedCardProps) {
           <div
             className={
               activeMenu === movie.id && editModal
-                ? "reveal bg-secondary text-neutral top-[98px] z-10"
+                ? "reveal bg-secondary text-neutral top-[98px] lg:mr-[80px] lg:top-[85px] z-10"
                 : activeMenu === movie.id
-                ? "reveal bg-secondary text-neutral z-10"
+                ? "reveal bg-secondary text-neutral z-10 lg:mr-[90px]"
                 : "hide"
             }
           >

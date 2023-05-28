@@ -46,6 +46,7 @@ export function Home() {
 
   useEffect(() => {
     const auth = getAuth();
+
     const fetchMovies = async () => {
       try {
         const movieRef = collection(db, "wantToWatch");
@@ -332,9 +333,9 @@ export function Home() {
   };
 
   return (
-    <div>
+    <div className="">
       <Tabs />
-      <div className="overflow-x-auto mx-2 my-6">
+      <div className="overflow-x-hidden mx-2 my-6 lg:mx-[13rem] lg:mt-10 lg:m-auto ">
         <div className="w-full flex justify-between items-center">
           <div>
             <form className="relative">
@@ -351,7 +352,7 @@ export function Home() {
           </div>
           <Filter sort={sortWatch} onChange={onFilterChange} />
         </div>
-        <table className="table table-zebra w-full">
+        <table className="table table-zebra w-full lg:border-2 shadow-lg border-neutral">
           <thead>
             <tr>
               <th>Movie Name</th>
@@ -388,15 +389,17 @@ export function Home() {
           )}
         </table>
 
-        <label
-          onClick={() => setModal(true)}
-          htmlFor="my-modal-3"
-          className="btn w-full mt-1"
-        >
-          <i className=" fa-solid fa-plus mt-[.6px] mr-[.4rem]" /> Add
-        </label>
+        <div className="lg:w-full lg:flex justify-end items-center">
+          <label
+            onClick={() => setModal(true)}
+            htmlFor="my-modal-3"
+            className="btn w-full lg:w-40 mt-2 lg:shadow-xl"
+          >
+            <i className=" fa-solid fa-plus mt-[.6px] mr-[.4rem]" /> Add
+          </label>
+        </div>
 
-        <div className="flex w-full justify-center items-center gap-2 mt-2 fixed bottom-0">
+        <div className="flex justify-center items-center gap-2 mt-2 m-auto">
           <button
             className={currentPage == 1 ? "text-gray-500" : ""}
             disabled={currentPage == 1 ? true : false}

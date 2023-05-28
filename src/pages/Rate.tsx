@@ -251,7 +251,7 @@ export function Rate() {
   return (
     <div>
       <Tabs />
-      <div className="overflow-x-hidden mx-1 mt-6">
+      <div className="overflow-x-hidden mx-1 mt-6 lg:mx-[13rem] lg:mt-10 lg:m-auto">
         <div className="w-full flex justify-between items-center">
           <div>
             <form className="relative">
@@ -270,7 +270,7 @@ export function Rate() {
         </div>
 
         <div>
-          <table className="table table-zebra w-full">
+          <table className="table table-zebra w-full lg:border-2 shadow-lg border-neutral">
             <thead>
               <tr>
                 <th>Movie</th>

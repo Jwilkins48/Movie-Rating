@@ -10,12 +10,14 @@ export function MovieCard({ movie, onClick, onDelete }: RatedCardProps) {
   return (
     <tr key={movie.id}>
       <th>
-        <p className="w-24 text-sm truncate">{movie.data.movieName}</p>
+        <p className="w-24 text-sm truncate lg:overflow-visible lg:text-lg">
+          {movie.data.movieName}
+        </p>
       </th>
       <td>
         <div className="flex items-center space-x-3">
           <div>
-            <div className="font-bold text-[14px] w-16 truncate">
+            <div className="font-bold text-[14px] w-16 truncate lg:overflow-visible lg:text-[16px]">
               {movie.data.genre}
             </div>
           </div>
