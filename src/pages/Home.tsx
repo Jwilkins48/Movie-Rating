@@ -1,6 +1,6 @@
 import { RateModal } from "../components/RateModal";
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase.config";
 import { Tabs } from "../components/Tabs";
 import {
@@ -39,6 +39,7 @@ export function Home() {
   const [modal, setModal] = useState(false);
   const [genre, setGenre] = useState("");
   const [name, setName] = useState("");
+  const [id, setID] = useState("");
 
   const navigate = useNavigate();
   const auth = getAuth();
@@ -168,7 +169,7 @@ export function Home() {
     setRateModal(!rateModal);
     setName(name);
     setGenre(genre);
-    onDelete(id);
+    setID(id);
   };
 
   //Filter
@@ -424,8 +425,10 @@ export function Home() {
         <RateModal
           name={name}
           genre={genre}
+          id={id}
           rateModal={rateModal}
           setRateModal={setRateModal}
+          onDelete={onDelete}
         />
       )}
 

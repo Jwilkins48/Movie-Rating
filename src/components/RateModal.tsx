@@ -1,11 +1,5 @@
-import { useEffect, useState } from "react";
-import {
-  serverTimestamp,
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { useState } from "react";
+import { serverTimestamp, addDoc, collection } from "firebase/firestore";
 import { db } from "../../firebase.config";
 import { getAuth } from "firebase/auth";
 
@@ -13,6 +7,8 @@ type RateModalProps = {
   rateModal: boolean;
   name: string;
   genre: string;
+  id: string;
+  onDelete: (id: string) => void;
   setRateModal: (ratedModal: boolean) => void;
 };
 
@@ -20,7 +16,9 @@ export function RateModal({
   rateModal,
   name,
   genre,
+  id,
   setRateModal,
+  onDelete,
 }: RateModalProps) {
   const [formData, setFormData] = useState({
     rating: "",
@@ -63,6 +61,7 @@ export function RateModal({
       // Add form data to collection
       await addDoc(collection(db, "ratedMovies"), formDataCopy);
       console.log("rated!");
+      onDelete(id);
       setRateModal(false);
       //Reset Form
       const resetForm = e.target as HTMLFormElement;
