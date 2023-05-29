@@ -98,7 +98,7 @@ export function Rate() {
                 where("userRef", "==", auth.currentUser?.uid),
                 orderBy("timestamp", "desc"),
                 endBefore(item.data.timestamp),
-                limitToLast(pageSize + 1)
+                limitToLast(pageSize)
               )
             : sort === "ASC"
             ? query(
@@ -106,7 +106,7 @@ export function Rate() {
                 where("userRef", "==", auth.currentUser?.uid),
                 orderBy("movieName", "asc"),
                 endBefore(item.data.movieName),
-                limitToLast(pageSize + 1)
+                limitToLast(pageSize)
               )
             : sort === "DESC"
             ? query(
@@ -114,7 +114,7 @@ export function Rate() {
                 where("userRef", "==", auth.currentUser?.uid),
                 orderBy("movieName", "desc"),
                 endBefore(item.data.movieName),
-                limitToLast(pageSize + 1)
+                limitToLast(pageSize)
               )
             : sort === "GENRE"
             ? query(
@@ -122,13 +122,13 @@ export function Rate() {
                 where("userRef", "==", auth.currentUser?.uid),
                 orderBy("genre", "asc"),
                 endBefore(item.data.genre),
-                limitToLast(pageSize + 1)
+                limitToLast(pageSize)
               )
             : query(
                 movieRef,
                 where("userRef", "==", auth.currentUser?.uid),
                 orderBy("timestamp", "desc"),
-                limitToLast(pageSize + 1)
+                limitToLast(pageSize)
               );
 
         const previousSnap = await getDocs(previous);
