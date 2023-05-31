@@ -1,11 +1,11 @@
 function HalfStar() {
   return (
-    <div className="rating rating-lg rating-half">
+    <div className="rating rating-lg rating-half pointer-events-none">
       <input
         id="rate"
         type="radio"
         name="rating-10"
-        className="rating-hidden"
+        className="rating-hidden "
       />
       <input
         id=".5"

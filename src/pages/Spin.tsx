@@ -5,39 +5,39 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
-import { Tabs } from "../components/Tabs";
 // import WheelComponent from "react-wheel-of-prizes";
-// import "react-wheel-of-prizes/dist/index.css";
+
 import { db } from "../../firebase.config";
 import { useEffect, useState } from "react";
 
-interface rate {
+interface watching {
   data: DocumentData;
   id: string;
 }
 
 export function Spin() {
-  const [ratedMovie, setRatedMovie] = useState<rate[]>([]);
+  const [watch, setWatch] = useState<watching[]>([]);
 
   useEffect(() => {
     const fetchMovies = async () => {
-      const movieRef = collection(db, "ratedMovies");
+      const movieRef = collection(db, "wantToWatch");
       const q = query(movieRef, orderBy("timestamp", "desc"));
 
       const querySnap = await getDocs(q);
-      const moviesArray: rate[] = [];
+      const moviesArray: watching[] = [];
       querySnap.forEach((doc) => {
         return moviesArray.push({
           id: doc.id,
           data: doc.data(),
         });
       });
-      setRatedMovie(moviesArray);
+      setWatch(moviesArray);
     };
-
     fetchMovies();
   }, []);
 
+  const movieNames = watch?.map((movie) => movie.data.movieName);
+  const segments = movieNames;
   const segColors = [
     "black",
     "#60BA97",
@@ -47,17 +47,18 @@ export function Spin() {
     "#60BA97",
   ];
 
-  const movies = ratedMovie.map((item) => item.data.movieName);
-  const segments = movies;
+  const onFinished = (winner: string) => {
+    console.log(winner);
+  };
 
   return (
     <div>
-      <Tabs />
+      spin
       {/* <WheelComponent
         segments={segments}
         segColors={segColors}
         winningSegment="MM"
-        onFinished={(winner) => onFinished(winner)}
+        onFinished={(winner: string) => onFinished(winner)}
         primaryColor="black"
         contrastColor="white"
         buttonText="Start"

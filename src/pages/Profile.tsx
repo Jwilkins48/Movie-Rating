@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import { db } from "../../firebase.config";
 import { getAuth } from "firebase/auth";
 import { TopRated } from "../components/TopRated";
-import { HalfStar, OneStar } from "../Assets/Stars";
 
 interface ratedList {
   data: DocumentData;
@@ -48,7 +47,7 @@ export function Profile() {
     fetchFavorites();
   }, []);
   return (
-    <div className="flex flex-col overflow-x-hidden mx-2 lg:mx-[40rem]">
+    <div className="flex flex-col overflow-x-hidden mx-2 lg:mx-[35rem]">
       <h1 className="text-3xl text-accent font-bold flex items-center justify-center mt-16 mb-10 title">
         {auth.currentUser?.displayName}'s Top 10
       </h1>
