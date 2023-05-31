@@ -35,6 +35,7 @@ export function Home() {
   const [sortWatch, setSortWatch] = useLocalStorage("sortWatch", []);
   const [currentPage, setCurrentPage] = useState(1);
   const [movies, setMovies] = useState<movie[]>([]);
+  const [searchMovies, setSearchMovies] = useState<movie[]>([]);
   const [rateModal, setRateModal] = useState(false);
   const [modal, setModal] = useState(false);
   const [genre, setGenre] = useState("");
@@ -97,13 +98,30 @@ export function Home() {
             data: doc.data(),
           });
         });
+
         setMovies(moviesArray);
-        console.log(movies);
+
+        //Search entire array without pagination
+        const searchQ = query(
+          movieRef,
+          orderBy("timestamp", "desc"),
+          where("userRef", "==", auth.currentUser?.uid)
+        );
+
+        const searchQuerySnap = await getDocs(searchQ);
+        const searchArray: movie[] = [];
+
+        searchQuerySnap.forEach((doc) => {
+          return searchArray.push({
+            id: doc.id,
+            data: doc.data(),
+          });
+        });
+        setSearchMovies(searchArray);
       } catch (error) {
         console.log(error);
       }
     };
-
     fetchMovies();
   }, [modal, sortWatch]);
 
@@ -307,13 +325,13 @@ export function Home() {
     }
   };
 
-  //Search
+  //Search using searchMovies array
   const [state, setState] = useState<DocumentData>({
     search: "",
     list: [],
   });
   const handleChange = async (e: React.FormEvent<HTMLInputElement>) => {
-    const results = movies.filter((movie) => {
+    const results = searchMovies.filter((movie) => {
       if (e.currentTarget.value === "") {
         return movie;
       }

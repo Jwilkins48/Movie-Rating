@@ -27,6 +27,7 @@ interface rate {
 
 export function Rate() {
   const [ratedMovie, setRatedMovie] = useState<rate[]>([]);
+  const [searchRated, setSearchRated] = useState<rate[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useLocalStorage("sort", []);
   const pageSize = 5;
@@ -81,6 +82,24 @@ export function Rate() {
         });
       });
       setRatedMovie(moviesArray);
+
+      //Search entire array without pagination
+      const searchQ = query(
+        movieRef,
+        orderBy("timestamp", "desc"),
+        where("userRef", "==", auth.currentUser?.uid)
+      );
+
+      const searchQuerySnap = await getDocs(searchQ);
+      const searchArray: rate[] = [];
+
+      searchQuerySnap.forEach((doc) => {
+        return searchArray.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+      setSearchRated(searchArray);
     };
     fetchMovies();
   }, [sort]);
@@ -234,7 +253,7 @@ export function Rate() {
     list: [],
   });
   const handleChange = async (e: React.FormEvent<HTMLInputElement>) => {
-    const results = ratedMovie.filter((movie) => {
+    const results = searchRated.filter((movie) => {
       if (e.currentTarget.value === "") {
         return ratedMovie;
       }
