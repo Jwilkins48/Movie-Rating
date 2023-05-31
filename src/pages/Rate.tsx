@@ -28,11 +28,17 @@ interface rate {
 export function Rate() {
   const [ratedMovie, setRatedMovie] = useState<rate[]>([]);
   const [searchRated, setSearchRated] = useState<rate[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useLocalStorage("sort", []);
-  const pageSize = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [deleted, setDeleted] = useState(false);
+
+  const lastMovie = searchRated[searchRated.length - 1];
+  const itemOnPage = ratedMovie.map((item) => item?.data?.movieName);
+  const lastPage = itemOnPage.includes(lastMovie?.data?.movieName);
 
   const auth = getAuth();
+  const pageSize = 5;
+
   useEffect(() => {
     const fetchMovies = async () => {
       const auth = getAuth();
@@ -102,7 +108,7 @@ export function Rate() {
       setSearchRated(searchArray);
     };
     fetchMovies();
-  }, [sort]);
+  }, [sort, deleted]);
 
   //Show Previous Movies in Pagination
   const previousMovies = async ({ item }: DocumentData) => {
@@ -171,7 +177,7 @@ export function Rate() {
 
   //Show Next Movies in Pagination
   const fetchNextMovies = async ({ item }: DocumentData) => {
-    if (ratedMovie.length < pageSize) {
+    if (lastPage) {
       alert("Thats all for now!");
     } else {
       try {
@@ -239,6 +245,7 @@ export function Rate() {
     await deleteDoc(doc(db, "ratedMovies", id));
     const updatedList = ratedMovie.filter((item) => item.id !== id);
     setRatedMovie(updatedList);
+    setDeleted(!deleted);
     console.log("Movie Deleted");
   };
 
@@ -269,7 +276,6 @@ export function Rate() {
 
   return (
     <div>
-      <Tabs />
       <div className="overflow-x-hidden mx-1 mt-6 lg:mx-[13rem] lg:mt-10 lg:m-auto">
         <div className="w-full flex justify-between items-center">
           <div>
@@ -326,8 +332,8 @@ export function Rate() {
               <i className="fa-solid fa-ghost" />
             </div>
             <button
-              disabled={ratedMovie.length < pageSize ? true : false}
-              className={ratedMovie.length < pageSize ? "text-gray-500" : ""}
+              disabled={lastPage}
+              className={lastPage ? "text-gray-500" : ""}
               onClick={() =>
                 fetchNextMovies({ item: ratedMovie[ratedMovie.length - 1] })
               }

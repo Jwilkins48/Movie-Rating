@@ -33,10 +33,11 @@ interface movie {
 export function Home() {
   const [formData, setFormData] = useState({ movieName: "", genre: "" });
   const [sortWatch, setSortWatch] = useLocalStorage("sortWatch", []);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [movies, setMovies] = useState<movie[]>([]);
   const [searchMovies, setSearchMovies] = useState<movie[]>([]);
+  const [movies, setMovies] = useState<movie[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [rateModal, setRateModal] = useState(false);
+  const [deleted, setDeleted] = useState(false);
   const [modal, setModal] = useState(false);
   const [genre, setGenre] = useState("");
   const [name, setName] = useState("");
@@ -46,13 +47,15 @@ export function Home() {
   const auth = getAuth();
   const pageSize = 5;
 
+  const lastMovie = searchMovies[searchMovies.length - 1];
+  const itemOnPage = movies.map((item) => item?.data?.movieName);
+  const lastPage = itemOnPage.includes(lastMovie?.data?.movieName);
+
   useEffect(() => {
     const auth = getAuth();
-
     const fetchMovies = async () => {
       try {
         const movieRef = collection(db, "wantToWatch");
-
         const q =
           sortWatch === "DEFAULT"
             ? query(
@@ -118,12 +121,23 @@ export function Home() {
           });
         });
         setSearchMovies(searchArray);
+
+        // const itemOnPage = movies.map((item) => item.data?.movieName);
+        console.log(itemOnPage);
+
+        // const lastMovie = searchMovies[searchMovies.length - 1];
+        // console.log(lastMovie.data?.movieName);
+
+        // setLastPage(itemOnPage.includes(lastMovie.data?.movieName));
+        console.log(lastPage);
       } catch (error) {
         console.log(error);
       }
     };
+
     fetchMovies();
-  }, [modal, sortWatch]);
+    console.log(movies);
+  }, [modal, sortWatch, deleted]);
 
   //Submit Modal
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -137,7 +151,6 @@ export function Home() {
         userRef: auth.currentUser?.uid,
         timestamp: serverTimestamp(),
       };
-
       // Add form data to collection
       await addDoc(collection(db, "wantToWatch"), formDataCopy);
       console.log("Saved!");
@@ -180,6 +193,7 @@ export function Home() {
     await deleteDoc(doc(db, "wantToWatch", id));
     const updatedList = movies.filter((item) => item.id !== id);
     setMovies(updatedList);
+    setDeleted(!deleted);
     console.log("Movie Deleted");
   };
 
@@ -199,6 +213,7 @@ export function Home() {
   const previousMovies = async ({ item }: DocumentData) => {
     if (currentPage !== 1) {
       try {
+        // setDeleted(!deleted);
         const auth = getAuth();
         const movieRef = collection(db, "wantToWatch");
         const previous =
@@ -262,10 +277,12 @@ export function Home() {
 
   //Show Next Movies in Pagination
   const fetchNextMovies = async ({ item }: DocumentData) => {
-    if (movies.length < pageSize) {
+    if (lastPage === true) {
       alert("Thats all for now!");
     } else {
       try {
+        // setDeleted(!deleted);
+
         const movieRef = collection(db, "wantToWatch");
         const next =
           sortWatch === "DEFAULT"
@@ -353,7 +370,7 @@ export function Home() {
 
   return (
     <div className="">
-      <Tabs />
+      {/* <Tabs /> */}
       <div className="overflow-x-hidden mx-2 my-6 lg:mx-[13rem] lg:mt-10 lg:m-auto ">
         <div className="w-full flex justify-between items-center">
           <div>
@@ -430,8 +447,8 @@ export function Home() {
             <i className="fa-solid fa-ghost" />
           </div>
           <button
-            className={movies.length < pageSize ? "text-gray-500" : ""}
-            disabled={movies.length < pageSize ? true : false}
+            className={lastPage ? "text-gray-500" : ""}
+            disabled={lastPage}
             onClick={() => fetchNextMovies({ item: movies[movies.length - 1] })}
           >
             Next
