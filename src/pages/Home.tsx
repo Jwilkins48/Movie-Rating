@@ -46,6 +46,7 @@ export function Home() {
   const auth = getAuth();
   const pageSize = 5;
 
+  //Check if pagination is on last page
   const lastMovie = searchMovies[searchMovies.length - 1];
   const itemOnPage = movies.map((item) => item?.data?.movieName);
   const lastPage = itemOnPage.includes(lastMovie?.data?.movieName);
@@ -80,7 +81,7 @@ export function Home() {
             : sortWatch === "GENRE"
             ? query(
                 movieRef,
-                orderBy("genre", "desc"),
+                orderBy("genre", "asc"),
                 where("userRef", "==", auth.currentUser?.uid),
                 limit(pageSize)
               )
@@ -104,11 +105,36 @@ export function Home() {
         setMovies(moviesArray);
 
         //Search entire array without pagination
-        const searchQ = query(
-          movieRef,
-          orderBy("timestamp", "desc"),
-          where("userRef", "==", auth.currentUser?.uid)
-        );
+        const searchQ =
+          sortWatch === "DEFAULT"
+            ? query(
+                movieRef,
+                orderBy("timestamp", "desc"),
+                where("userRef", "==", auth.currentUser?.uid)
+              )
+            : sortWatch === "ASC"
+            ? query(
+                movieRef,
+                orderBy("movieName", "asc"),
+                where("userRef", "==", auth.currentUser?.uid)
+              )
+            : sortWatch === "DESC"
+            ? query(
+                movieRef,
+                orderBy("movieName", "desc"),
+                where("userRef", "==", auth.currentUser?.uid)
+              )
+            : sortWatch === "GENRE"
+            ? query(
+                movieRef,
+                orderBy("genre", "asc"),
+                where("userRef", "==", auth.currentUser?.uid)
+              )
+            : query(
+                movieRef,
+                orderBy("timestamp", "desc"),
+                where("userRef", "==", auth.currentUser?.uid)
+              );
 
         const searchQuerySnap = await getDocs(searchQ);
         const searchArray: movie[] = [];
@@ -126,7 +152,6 @@ export function Home() {
     };
 
     fetchMovies();
-    console.log(movies);
   }, [modal, sortWatch, deleted]);
 
   //Submit Modal
@@ -197,6 +222,7 @@ export function Home() {
   //Filter
   const onFilterChange = (e: React.FormEvent<HTMLSelectElement>) => {
     setSortWatch(e.currentTarget.value);
+    setCurrentPage(1);
   };
 
   //Show Previous Movies in Pagination

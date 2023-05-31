@@ -32,6 +32,7 @@ export function Rate() {
   const [currentPage, setCurrentPage] = useState(1);
   const [deleted, setDeleted] = useState(false);
 
+  //Check if pagination is on last page
   const lastMovie = searchRated[searchRated.length - 1];
   const itemOnPage = ratedMovie.map((item) => item?.data?.movieName);
   const lastPage = itemOnPage.includes(lastMovie?.data?.movieName);
@@ -90,11 +91,36 @@ export function Rate() {
       setRatedMovie(moviesArray);
 
       //Search entire array without pagination
-      const searchQ = query(
-        movieRef,
-        orderBy("timestamp", "desc"),
-        where("userRef", "==", auth.currentUser?.uid)
-      );
+      const searchQ =
+        sort === "DEFAULT"
+          ? query(
+              movieRef,
+              where("userRef", "==", auth.currentUser?.uid),
+              orderBy("timestamp", "desc")
+            )
+          : sort === "ASC"
+          ? query(
+              movieRef,
+              where("userRef", "==", auth.currentUser?.uid),
+              orderBy("movieName", "asc")
+            )
+          : sort === "DESC"
+          ? query(
+              movieRef,
+              where("userRef", "==", auth.currentUser?.uid),
+              orderBy("movieName", "desc")
+            )
+          : sort === "GENRE"
+          ? query(
+              movieRef,
+              where("userRef", "==", auth.currentUser?.uid),
+              orderBy("genre", "asc")
+            )
+          : query(
+              movieRef,
+              where("userRef", "==", auth.currentUser?.uid),
+              orderBy("timestamp", "desc")
+            );
 
       const searchQuerySnap = await getDocs(searchQ);
       const searchArray: rate[] = [];

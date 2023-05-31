@@ -67,5 +67,4 @@ function OneHalfStar() {
   );
 }
 
-// 👇️ named exports
 export { HalfStar, OneStar, OneHalfStar };
