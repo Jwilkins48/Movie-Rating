@@ -2,6 +2,18 @@ import { DocumentData, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useState, useEffect } from "react";
 import { db } from "../../firebase.config";
 import { Select } from "../Assets/Select";
+import {
+  FiveStar,
+  FourHalfStar,
+  FourStar,
+  HalfStar,
+  OneHalfStar,
+  OneStar,
+  ThreeHalfStar,
+  ThreeStar,
+  TwoHalfStar,
+  TwoStar,
+} from "../Assets/Stars";
 
 type RatedCardProps = {
   movie: DocumentData;
@@ -112,6 +124,7 @@ export function RatedCard({ movie, onDelete }: RatedCardProps) {
     await updateDoc(docRef, formData);
     console.log("Updated");
   };
+  const rating = movie.data.rating;
 
   return (
     <>
@@ -188,7 +201,58 @@ export function RatedCard({ movie, onDelete }: RatedCardProps) {
           ) : (
             <label>
               <div className="font-bold">
-                {rate ? rate : movie.data.rating}/5
+                <div className="hidden sm:block">
+                  {rate ? (
+                    rate === ".5" ? (
+                      <HalfStar />
+                    ) : rate === "1" ? (
+                      <OneStar />
+                    ) : rate === "1.5" ? (
+                      <OneHalfStar />
+                    ) : rate === "2" ? (
+                      <TwoStar />
+                    ) : rate === "2.5" ? (
+                      <TwoHalfStar />
+                    ) : rate === "3" ? (
+                      <ThreeStar />
+                    ) : rate === "3.5" ? (
+                      <ThreeHalfStar />
+                    ) : rate === "4" ? (
+                      <FourStar />
+                    ) : rate === "4.5" ? (
+                      <FourHalfStar />
+                    ) : rate === "5" ? (
+                      <FiveStar />
+                    ) : (
+                      ""
+                    )
+                  ) : rating === ".5" ? (
+                    <HalfStar />
+                  ) : rating === "1" ? (
+                    <OneStar />
+                  ) : rating === "1.5" ? (
+                    <OneHalfStar />
+                  ) : rating === "2" ? (
+                    <TwoStar />
+                  ) : rating === "2.5" ? (
+                    <TwoHalfStar />
+                  ) : rating === "3" ? (
+                    <ThreeStar />
+                  ) : rating === "3.5" ? (
+                    <ThreeHalfStar />
+                  ) : rating === "4" ? (
+                    <FourStar />
+                  ) : rating === "4.5" ? (
+                    <FourHalfStar />
+                  ) : rating === "5" ? (
+                    <FiveStar />
+                  ) : (
+                    ""
+                  )}
+                </div>
+                <div className="block sm:hidden">
+                  {rate ? rate : movie.data.rating}/5
+                </div>
               </div>
             </label>
           )}

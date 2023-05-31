@@ -174,7 +174,7 @@ export function Home() {
       //Reset Form
       const resetForm = e.target as HTMLFormElement;
       resetForm.reset();
-
+      //Clear genre after submit
       setFormData((prevState) => ({
         ...prevState,
         genre: "",
@@ -212,6 +212,7 @@ export function Home() {
     console.log("Movie Deleted");
   };
 
+  //Set as watched
   const onWatchedClick = (id: string, name: string, genre: string) => {
     setRateModal(!rateModal);
     setName(name);
