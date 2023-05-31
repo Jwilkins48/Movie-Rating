@@ -48,8 +48,8 @@ export function Profile() {
     fetchFavorites();
   }, []);
   return (
-    <div className="flex flex-col overflow-x-hidden mx-2 lg:mx-[35rem]">
-      <h1 className="text-2xl text-accent font-bold flex items-center justify-center my-5">
+    <div className="flex flex-col overflow-x-hidden mx-2 lg:mx-[20rem]">
+      <h1 className="text-3xl text-accent font-bold flex items-center justify-center mt-16 mb-10 title">
         {auth.currentUser?.displayName}'s Top 10
       </h1>
       <table className="table table-zebra lg:border-2 shadow-xl border-neutral">

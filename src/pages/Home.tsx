@@ -2,7 +2,6 @@ import { RateModal } from "../components/RateModal";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase.config";
-import { Tabs } from "../components/Tabs";
 import {
   DocumentData,
   addDoc,
@@ -121,15 +120,6 @@ export function Home() {
           });
         });
         setSearchMovies(searchArray);
-
-        // const itemOnPage = movies.map((item) => item.data?.movieName);
-        console.log(itemOnPage);
-
-        // const lastMovie = searchMovies[searchMovies.length - 1];
-        // console.log(lastMovie.data?.movieName);
-
-        // setLastPage(itemOnPage.includes(lastMovie.data?.movieName));
-        console.log(lastPage);
       } catch (error) {
         console.log(error);
       }
@@ -213,7 +203,6 @@ export function Home() {
   const previousMovies = async ({ item }: DocumentData) => {
     if (currentPage !== 1) {
       try {
-        // setDeleted(!deleted);
         const auth = getAuth();
         const movieRef = collection(db, "wantToWatch");
         const previous =
@@ -281,8 +270,6 @@ export function Home() {
       alert("Thats all for now!");
     } else {
       try {
-        // setDeleted(!deleted);
-
         const movieRef = collection(db, "wantToWatch");
         const next =
           sortWatch === "DEFAULT"
@@ -370,7 +357,6 @@ export function Home() {
 
   return (
     <div className="">
-      {/* <Tabs /> */}
       <div className="overflow-x-hidden mx-2 my-6 lg:mx-[13rem] lg:mt-10 lg:m-auto ">
         <div className="w-full flex justify-between items-center">
           <div>
