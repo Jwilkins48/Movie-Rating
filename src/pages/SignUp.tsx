@@ -65,7 +65,7 @@ export function SignUp() {
 
   return (
     <div className="lg:flex flex-col items-center justify-center lg:h-[90vh] overflow-hidden">
-      <div className="lg:bg-base-300 lg:p-12 lg:py-20 lg:shadow-2xl lg:rounded-xl animate__animated animate__fadeIn animate border-accent lg:border-[1px]">
+      <div className="lg:bg-base-300 lg:p-12 lg:py-12 lg:shadow-2xl lg:rounded-xl animate__animated animate__fadeIn animate border-accent lg:border-[1px]">
         <header>
           <h3 className="text-3xl lg:text-5xl my-6 ml-3 font-bold text-primary">
             Welcome!
@@ -127,12 +127,6 @@ export function SignUp() {
           <button className="btn lg:btn-info my-1" type="submit">
             Sign Up
           </button>
-          <Link
-            to="/forgot-password"
-            className="text-primary font-bold my-2 ml-2"
-          >
-            Forgot Password?
-          </Link>
 
           <Link className=" text-primary font-bold my-2 ml-2" to="/sign-in">
             Sign In

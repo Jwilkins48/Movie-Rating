@@ -163,9 +163,15 @@ export function Home({ active, setActive }: HomeProps) {
   //Submit Modal
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
     const auth = getAuth();
-    if (formData.movieName !== "") {
+    const movieNames = movies?.map((movie) =>
+      movie.data.movieName.toLowerCase()
+    );
+    console.log(movieNames.includes(currName));
+
+    if (movieNames.includes(currName.toLowerCase())) {
+      alert("Movie already exists in list");
+    } else if (formData.movieName !== "") {
       //Add timestamp
       const formDataCopy = {
         ...formData,
@@ -199,10 +205,11 @@ export function Home({ active, setActive }: HomeProps) {
       genre: value,
     }));
   };
-
+  const [currName, setCurrName] = useState("");
   //Modal Movie Name Input
   const onChange = (e: React.FormEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
+    setCurrName(value);
     setFormData((prevState) => ({
       ...prevState,
       movieName: value,
@@ -388,6 +395,10 @@ export function Home({ active, setActive }: HomeProps) {
     setSearchOpen(!searchOpen);
   };
 
+  const addModalClose = () => {
+    setModal(false);
+  };
+
   return (
     <div className="">
       <Tabs active={active} setActive={setActive} />
@@ -501,7 +512,7 @@ export function Home({ active, setActive }: HomeProps) {
       <form onSubmit={onSubmit} className="modal" id="modal">
         <div className="modal-box relative">
           <label
-            onClick={() => setModal(false)}
+            onClick={(e) => addModalClose(e)}
             htmlFor="my-modal-3"
             className="btn btn-sm btn-circle absolute right-2 top-2"
           >
