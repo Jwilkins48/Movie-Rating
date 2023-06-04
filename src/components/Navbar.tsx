@@ -1,15 +1,16 @@
 import { getAuth } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Tabs } from "./Tabs";
-import useLocalStorage from "../hooks/useLocalStorage";
 
-export function Navbar({ active, setActive }) {
+interface NavProps {
+  setActive: (active: number) => void;
+}
+
+export function Navbar({ setActive }: NavProps) {
   const auth = getAuth();
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
   const [dropdown, setDropdown] = useState(false);
-  // const [active, setActive] = useLocalStorage("active", []);
 
   //Update nav after logout
   useEffect(() => {
@@ -86,7 +87,6 @@ export function Navbar({ active, setActive }) {
           )}
         </div>
       </nav>
-      {/* <Tabs active={active} setActive={setActive} /> */}
     </div>
   );
 }

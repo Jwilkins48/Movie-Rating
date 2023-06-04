@@ -15,7 +15,7 @@ function App() {
 
   return (
     <>
-      <Navbar active={active} setActive={setActive} />
+      <Navbar setActive={setActive} />
       <Routes>
         <Route path="/" element={<PrivateRoute />}>
           <Route

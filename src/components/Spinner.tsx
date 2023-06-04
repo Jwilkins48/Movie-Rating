@@ -1,9 +1,14 @@
+import { DocumentData } from "firebase/firestore";
 import WheelComponent from "react-wheel-of-prizes";
-import { useState } from "react";
 
-interface w {
-  watch: any[];
+interface watching {
+  data: DocumentData;
+  id: string;
 }
+interface w {
+  watch: watching[];
+}
+
 function Spinner({ watch }: w) {
   const movieNames = watch?.map((movie) => movie.data.movieName);
   const segColors = [
@@ -17,10 +22,8 @@ function Spinner({ watch }: w) {
     "#3abc6a",
   ];
 
-  const [winner, setWinner] = useState("");
   const onFinished = (winner: string) => {
     console.log(winner);
-    setWinner(winner);
   };
 
   return (
