@@ -14,6 +14,7 @@ export function Navbar() {
   //Update nav after logout
   useEffect(() => {
     auth.currentUser ? setLoggedIn(true) : setLoggedIn(false);
+    setActive[0];
   }, [auth.currentUser, loggedIn]);
 
   //Close daisy dropdown tab on click

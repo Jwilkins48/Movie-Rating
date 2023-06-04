@@ -1,12 +1,18 @@
 import { DocumentData } from "firebase/firestore";
 
 type RatedCardProps = {
+  checked: boolean;
   movie: DocumentData;
-  onClick: (id: string, name: string, genre: string) => void;
   onDelete: (id: string) => void;
+  onClick: (id: string, name: string, genre: string) => void;
 };
 
-export function MovieCard({ movie, onClick, onDelete }: RatedCardProps) {
+export function MovieCard({
+  movie,
+  checked,
+  onClick,
+  onDelete,
+}: RatedCardProps) {
   return (
     <tr key={movie.id}>
       <th>
@@ -31,6 +37,7 @@ export function MovieCard({ movie, onClick, onDelete }: RatedCardProps) {
             }
             type="checkbox"
             className="checkbox"
+            checked={checked}
           />
         </label>
       </td>

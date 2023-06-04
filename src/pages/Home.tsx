@@ -412,11 +412,12 @@ export function Home() {
               <th></th>
             </tr>
           </thead>
-          {/* Display movies in array */}
+          {/* Display rated movies */}
           {state.search === "" ? (
             <tbody>
               {movies.map((movie) => (
                 <MovieCard
+                  checked={rateModal}
                   key={movie.id}
                   movie={movie}
                   onClick={onWatchedClick}
@@ -426,8 +427,10 @@ export function Home() {
             </tbody>
           ) : (
             <tbody>
+              {/* Display searched movie */}
               {state.list.map((movie: DocumentData) => (
                 <MovieCard
+                  checked={rateModal}
                   key={movie.id}
                   movie={movie}
                   onClick={onWatchedClick}
