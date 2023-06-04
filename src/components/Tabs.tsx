@@ -13,7 +13,7 @@ export function Tabs({ active, setActive }: TypeProps) {
   ];
 
   return (
-    <ul className="flex justify-center gap-6 md:gap-48 sm:mb-14 mt-[4rem] text-indigo-300 font-bold tabs text-[19px]">
+    <ul className="flex justify-center gap-6 sm:gap-10 md:gap-48 sm:mb-14 mt-[4rem] text-indigo-300 font-bold tabs text-[19px]">
       {links.map((tab) => (
         <div key={tab.id} id={tab.id.toString()}>
           <Link className="link" to={tab.path}>

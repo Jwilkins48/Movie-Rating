@@ -77,3 +77,24 @@ font-family: 'Sigmar', cursive; . */
   pointer-events: none;
   position: absolute;
 }
+
+@media (max-width: 767px) {
+  .wheel-container canvas {
+    height: 100%;
+    width: 150%;
+    transform: translateX(3%);
+    color: #fff;
+  }
+}
+
+@media (min-width: 120em /* 1920px */) {
+  .wheel-container {
+    height: 600px;
+  }
+}
+
+@media (min-width: 160em /* 2560px */) {
+  .wheel-container {
+    margin-left: 14.5%;
+  }
+}
