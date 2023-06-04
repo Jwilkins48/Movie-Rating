@@ -4,12 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { Tabs } from "./Tabs";
 import useLocalStorage from "../hooks/useLocalStorage";
 
-export function Navbar() {
+export function Navbar({ active, setActive }) {
   const auth = getAuth();
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
   const [dropdown, setDropdown] = useState(false);
-  const [active, setActive] = useLocalStorage("active", []);
+  // const [active, setActive] = useLocalStorage("active", []);
 
   //Update nav after logout
   useEffect(() => {
@@ -86,7 +86,7 @@ export function Navbar() {
           )}
         </div>
       </nav>
-      <Tabs active={active} setActive={setActive} />
+      {/* <Tabs active={active} setActive={setActive} /> */}
     </div>
   );
 }

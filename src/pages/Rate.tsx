@@ -25,7 +25,12 @@ interface rate {
   id: string;
 }
 
-export function Rate() {
+interface RateProps {
+  active: number;
+  setActive: (active: number) => void;
+}
+
+export function Rate({ active, setActive }: RateProps) {
   const [ratedMovie, setRatedMovie] = useState<rate[]>([]);
   const [searchRated, setSearchRated] = useState<rate[]>([]);
   const [sort, setSort] = useLocalStorage("sort", []);
@@ -302,6 +307,8 @@ export function Rate() {
 
   return (
     <div>
+      <Tabs active={active} setActive={setActive} />
+
       <div className="overflow-x-hidden mx-1 mt-6 lg:mx-[13rem] lg:mt-10 lg:m-auto">
         <div className="w-full flex justify-between items-center">
           <div>

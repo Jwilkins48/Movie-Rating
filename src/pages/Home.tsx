@@ -23,13 +23,19 @@ import { getAuth } from "firebase/auth";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { Filter } from "../Assets/Filter";
 import { MovieCard } from "../components/MovieCard";
+import { Tabs } from "../components/Tabs";
 
 interface movie {
   data: DocumentData;
   id: string;
 }
 
-export function Home() {
+interface HomeProps {
+  active: number;
+  setActive: (active: number) => void;
+}
+
+export function Home({ active, setActive }: HomeProps) {
   const [formData, setFormData] = useState({ movieName: "", genre: "" });
   const [sortWatch, setSortWatch] = useLocalStorage("sortWatch", []);
   const [searchMovies, setSearchMovies] = useState<movie[]>([]);
@@ -384,6 +390,7 @@ export function Home() {
 
   return (
     <div className="">
+      <Tabs active={active} setActive={setActive} />
       <div className="overflow-x-hidden mx-2 my-6 lg:mx-[13rem] lg:mt-10 lg:m-auto ">
         <div className="w-full flex justify-between items-center">
           <div>

@@ -8,21 +8,33 @@ import { Profile } from "./pages/Profile";
 import { Rate } from "./pages/Rate";
 import { Spin } from "./pages/Spin";
 import PrivateRoute from "./components/PrivateRoute";
+import useLocalStorage from "./hooks/useLocalStorage";
 
 function App() {
+  const [active, setActive] = useLocalStorage("active", []);
+
   return (
     <>
-      <Navbar />
+      <Navbar active={active} setActive={setActive} />
       <Routes>
         <Route path="/" element={<PrivateRoute />}>
-          <Route path="/" element={<Home />} />
+          <Route
+            path="/"
+            element={<Home active={active} setActive={setActive} />}
+          />
         </Route>
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/rate" element={<Rate />} />
-        <Route path="/spin" element={<Spin />} />
+        <Route
+          path="/rate"
+          element={<Rate active={active} setActive={setActive} />}
+        />
+        <Route
+          path="/spin"
+          element={<Spin active={active} setActive={setActive} />}
+        />
       </Routes>
     </>
   );

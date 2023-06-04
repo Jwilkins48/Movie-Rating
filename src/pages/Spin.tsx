@@ -11,13 +11,19 @@ import { db } from "../../firebase.config";
 import { useEffect, useState } from "react";
 import { getAuth } from "firebase/auth";
 import Spinner from "../components/Spinner";
+import { Tabs } from "../components/Tabs";
 
 interface watching {
   data: DocumentData;
   id: string;
 }
 
-export function Spin() {
+interface SpinProps {
+  active: number;
+  setActive: (active: number) => void;
+}
+
+export function Spin({ active, setActive }: SpinProps) {
   const [watch, setWatch] = useState<watching[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,6 +54,8 @@ export function Spin() {
 
   return (
     <main>
+      <Tabs active={active} setActive={setActive} />
+
       {loading ? (
         <span className="loading loading-spinner text-primary"></span>
       ) : (
