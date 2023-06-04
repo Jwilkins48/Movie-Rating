@@ -512,7 +512,7 @@ export function Home({ active, setActive }: HomeProps) {
       <form onSubmit={onSubmit} className="modal" id="modal">
         <div className="modal-box relative">
           <label
-            onClick={(e) => addModalClose(e)}
+            onClick={addModalClose}
             htmlFor="my-modal-3"
             className="btn btn-sm btn-circle absolute right-2 top-2"
           >
