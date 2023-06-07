@@ -1,6 +1,4 @@
 import { DocumentData } from "firebase/firestore";
-import "../spinner";
-
 import WheelComponent from "react-wheel-of-prizes";
 
 interface watching {
